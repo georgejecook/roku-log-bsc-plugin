@@ -1,0 +1,12 @@
+{
+	"compilerOptions": {
+		"outDir": "./dist",
+		"allowJs": true,
+		"target": "es5",
+    "lib": ["esnext", "dom"],
+    "downlevelIteration": true
+	},
+	"include": [
+		"./src/**/*"
+	]
+}
