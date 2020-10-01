@@ -1,4 +1,4 @@
-import { CallExpression, createVisitor, EmptyStatement, ExpressionStatement, isCallExpression, VariableExpression } from 'brighterscript';
+import { BinaryExpression, CallExpression, CommentStatement, createStringLiteral, createToken, createVisitor, EmptyStatement, ExpressionStatement, isCallExpression, Range, SourceLiteralExpression, TokenKind, VariableExpression } from 'brighterscript';
 
 import {
   BrsFile,
@@ -11,10 +11,13 @@ import {
   Util,
   XmlFile,
 } from 'brighterscript';
+import { TranspileState } from 'brighterscript/dist/parser/TranspileState';
+
+import { LiteralExpression } from 'brighterscript/src/parser/Expression';
 
 
 let rokuLogConfig: {
-  strip: false,
+  strip: true,
   insertPkgPath: true
 };
 
@@ -35,44 +38,40 @@ const pluginInterface: CompilerPlugin = {
 export default pluginInterface;
 
 function beforeFileTranspile(entry: TranspileObj) {
-  // if (entry.file instanceof BrsFile) {
+  if (entry.file instanceof BrsFile) {
 
-  const parser = entry.file.parser;
-  for (let expr of parser.references.functionExpressions) {
-    expr.body.walk(createVisitor({
-      ExpressionStatement: (es) => {
-        es.walk(createVisitor({
-          CallExpression: (ec) => {
-            let v = ec.callee as any as VariableExpression;
-            console.log('ec ', ec);
+    const parser = entry.file.parser;
+    const transpileState = new TranspileState(entry.file);
+    for (let expr of parser.references.functionExpressions) {
+      expr.body.walk(createVisitor({
+        ExpressionStatement: (es) => {
+          let ce = es.expression as CallExpression;
+          if (ce) {
+            let ve = ce.callee as VariableExpression;
+            if (ve) {
+              const logMethodRegex = /log(error|warn|info|method|verbose|debug)/i;
+              if (logMethodRegex.test(ve.name.text)) {
+                if (rokuLogConfig.strip) {
+                  return new EmptyStatement();
+                } else if (rokuLogConfig.insertPkgPath) {
+                  const t = createToken(TokenKind.SourceLocationLiteral, ce.range.start);
+                  var sourceExpression = new SourceLiteralExpression(t);
+                  if (ce.args.length > 0) {
+                    ce.args[0] = new BinaryExpression(sourceExpression, createToken(TokenKind.Plus, ce.range.start, '+'), ce.args[0]);
+                  } else {
+                    ce.args.push(sourceExpression);
+                  }
+                }
+              }
+            }
           }
-        }), { walkExpressions: true });
-        if (isCallExpression(es.expression as any)) {
+          // console.log('expr is ', expr);
 
+          // }
         }
-        if (es.expression instanceof CallExpression) {
-          //   let expr = es.expression as CallExpression;
-          //         let v = expr.callee as VariableExpression;
-          //         let name = v.name.text;
-          //         console.log('name', name);
-          //         if (name === 'logInfo' || name === 'logWarn' || name === 'logError') {
-          //           if (rokuLogConfig.strip) {
-          //             return new EmptyStatement();
-          //           } else if (rokuLogConfig.insertPkgPath) {
-          //             if (expr.args.length > 0) {
-          //               //update first arg
-          //             } else {
-          //               //add an arg
-          //             }
-          //           }
-          //         }
-        }
-        // console.log('expr is ', expr);
-
-        // }
-      }
-    }), {
-      walkStatements: true
-    });
+      }), {
+        walkStatements: true
+      });
+    }
   }
 }

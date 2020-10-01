@@ -10,9 +10,14 @@
   ],
   "autoImportComponentScript": true,
   "createPackage": false,
-  "stagingFolderPath": "out",
+  "stagingFolderPath": "/tmp/out",
+  "retainStagingFolder": true,
   "rooibos": {
     "isRecordingCodeCoverage": false,
     "testsFilePattern": null
+  },
+  "rokuLog": {
+    "strip": true,
+    "insertPkgPath": true
   }
 }

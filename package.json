@@ -10,7 +10,7 @@
     "test": "test"
   },
   "dependencies": {
-    "brighterscript": "file:../brighterscript"
+    "brighterscript": "file:/home/george/hope/open-source/vsc/brighterscript"
   },
   "devDependencies": {
     "typescript": "^4.0.3"
