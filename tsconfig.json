@@ -1,12 +1,28 @@
 {
-	"compilerOptions": {
-		"outDir": "./dist",
-		"allowJs": true,
-		"target": "es5",
-    "lib": ["esnext", "dom"],
-    "downlevelIteration": true
-	},
-	"include": [
-		"./src/**/*"
-	]
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "target": "ES2017",
+    "module": "commonjs",
+    "sourceMap": true,
+    "rootDir": "src",
+    "declaration": true,
+    "strict": true,
+    "strictNullChecks": false,
+    "forceConsistentCasingInFileNames": true,
+    "preserveConstEnums": true,
+    "downlevelIteration": true,
+    "allowSyntheticDefaultImports": true,
+    "lib": [
+      "es2017",
+      "es2019.array"
+    ],
+    "outDir": "./dist"
+  },
+  "exclude": [
+    "node_modules/**/*"
+  ],
+  "include": [
+    "./src/**/*"
+  ],
+  
 }

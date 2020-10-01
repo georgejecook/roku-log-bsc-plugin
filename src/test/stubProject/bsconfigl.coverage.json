@@ -7,9 +7,8 @@
   ],
   "autoImportComponentScript": true,
   "createPackage": false,
-  "stagingFolderPath": "out",
-  "rooibos": {
-    "isRecordingCodeCoverage": false,
-    "testsFilePattern": null
+  "stagingFolderPath": "dist",
+  "rooibos-settings": {
+    "coverage": true
   }
 }
