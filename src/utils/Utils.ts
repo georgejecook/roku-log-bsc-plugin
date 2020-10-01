@@ -1,8 +1,5 @@
-import { BrsFile, Token, TokenKind, XmlFile } from 'brighterscript';
+import { Position, Range, BrsFile, Token, TokenKind, XmlFile } from 'brighterscript';
 import { BrsType } from 'brighterscript/dist/brsTypes';
-import * as path from 'path';
-
-import { Position, Range } from 'vscode-languageserver';
 
 // import { ProjectFileMap } from '../fileProcessing/ProjectFileMap';
 
@@ -70,7 +67,7 @@ export function getAlternateFileNames(fileName: string): string[] {
     fileName.toLowerCase().endsWith('.xml')
   ) {
     return [fileName.substring(0, fileName.length - 4) + '.brs',
-      fileName.substring(0, fileName.length - 4) + '.bs'];
+    fileName.substring(0, fileName.length - 4) + '.bs'];
   } else {
     return [];
   }

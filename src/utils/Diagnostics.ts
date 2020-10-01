@@ -1,6 +1,4 @@
-import { BrsFile, XmlFile } from 'brighterscript';
-
-import { DiagnosticSeverity, Range } from 'vscode-languageserver';
+import { DiagnosticSeverity, Range, BrsFile, XmlFile } from 'brighterscript';
 
 function addErrorDiagnostic(
   file: BrsFile,

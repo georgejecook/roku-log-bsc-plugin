@@ -5,6 +5,9 @@
     "source/**/*.*",
     "components/**/*.*"
   ],
+  "plugins": [
+    "../../dist/plugin.js"
+  ],
   "autoImportComponentScript": true,
   "createPackage": false,
   "stagingFolderPath": "out",

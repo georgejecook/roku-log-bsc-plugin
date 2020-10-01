@@ -1,4 +1,4 @@
-import { CallExpression, EmptyStatement, ExpressionStatement } from 'brighterscript/dist/parser';
+import { CallExpression, createVisitor, EmptyStatement, ExpressionStatement, isCallExpression, VariableExpression } from 'brighterscript';
 
 import {
   BrsFile,
@@ -12,11 +12,6 @@ import {
   XmlFile,
 } from 'brighterscript';
 
-import { createVisitor } from 'brighterscript/dist/astUtils';
-
-import { VariableExpression } from 'brighterscript/src/parser/Expression';
-
-import { isCallExpression } from 'brighterscript/src/astUtils/reflection';
 
 let rokuLogConfig: {
   strip: false,
