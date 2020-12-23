@@ -1,12 +1,12 @@
 {
 	"folders": [
-		{
-			"path": "."
-		},
-		{
-			"path": "../vsc/brighterscript"
-		}
-	],
+    {
+      "path": "."
+    },
+    {
+      "path": "../../vsc/brighterscript"
+    }
+  ],
   "settings": {
     "jira-plugin.workingProject": "",
     "workbench.colorCustomizations": {
