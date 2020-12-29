@@ -1,4 +1,4 @@
-import { BinaryExpression, CallExpression, CommentStatement, createStringLiteral, createToken, createVisitor, EmptyStatement, ExpressionStatement, isCallExpression, Range, SourceLiteralExpression, TokenKind, VariableExpression } from 'brighterscript';
+import { BinaryExpression, CallExpression, CommentStatement, createStringLiteral, createToken, createVisitor, EmptyStatement, ExpressionStatement, isCallExpression, Range, SourceLiteralExpression, TokenKind, VariableExpression, WalkMode } from 'brighterscript';
 
 import {
   BrsFile,
@@ -41,7 +41,6 @@ function beforeFileTranspile(entry: TranspileObj) {
   if (entry.file instanceof BrsFile) {
 
     const parser = entry.file.parser;
-    const transpileState = new TranspileState(entry.file);
     for (let expr of parser.references.functionExpressions) {
       expr.body.walk(createVisitor({
         ExpressionStatement: (es) => {
@@ -54,10 +53,11 @@ function beforeFileTranspile(entry: TranspileObj) {
                 if (rokuLogConfig.strip) {
                   return new EmptyStatement();
                 } else if (rokuLogConfig.insertPkgPath) {
-                  const t = createToken(TokenKind.SourceLocationLiteral, ce.range.start);
+                  const t = createToken(TokenKind.SourceLocationLiteral, '', ce.range);
                   var sourceExpression = new SourceLiteralExpression(t);
                   if (ce.args.length > 0) {
-                    ce.args[0] = new BinaryExpression(sourceExpression, createToken(TokenKind.Plus, ce.range.start, '+'), ce.args[0]);
+
+                    ce.args[0] = new BinaryExpression(sourceExpression, createToken(TokenKind.Plus, '+', ce.range), ce.args[0]);
                   } else {
                     ce.args.push(sourceExpression);
                   }
@@ -69,9 +69,7 @@ function beforeFileTranspile(entry: TranspileObj) {
 
           // }
         }
-      }), {
-        walkStatements: true
-      });
+      }), { walkMode: WalkMode.visitAllRecursive});
     }
   }
 }

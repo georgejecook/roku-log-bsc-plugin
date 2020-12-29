@@ -1,7 +1,7 @@
 {
-  "name": "maestro-vsc-extension-plugin",
+  "name": "roku-log-bsc-plugin",
   "version": "0.1.0",
-  "description": "Visual studio plugin for maestro brightscript development",
+  "description": "Visual studio plugin for roku logger",
   "files": [
     "dist/**/!(*.spec.*)*"
   ],
@@ -10,7 +10,7 @@
     "test": "test"
   },
   "dependencies": {
-    "brighterscript": "file:/home/george/hope/open-source/vsc/brighterscript"
+    "brighterscript": "^0.23.1"
   },
   "devDependencies": {
     "typescript": "^4.0.3"

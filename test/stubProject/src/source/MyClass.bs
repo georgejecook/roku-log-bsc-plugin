@@ -1,0 +1,23 @@
+namespace Test
+  class MyTestClass
+    function new()
+      m.logInfo("some text")
+      m.another2()
+      m.logError("some text", "somethingElse")
+    end function
+
+    function another()
+      m.logMethod("another")
+      ? "this"
+      another2()
+      m.logInfo("some text")
+    end function
+    
+    function another2()
+      m.logMethod("another2")
+      m.logWarn("some text", "some other")
+      m.logError(name + "some text", "some other")
+      m.logError(another() + "some text", "some other")
+    end function
+  end class
+end namespace

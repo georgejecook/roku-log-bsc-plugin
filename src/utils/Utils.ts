@@ -73,26 +73,6 @@ export function getAlternateFileNames(fileName: string): string[] {
   }
 }
 
-// export function getAssociatedFile(file: XmlFile | BrsFile, fileMap: ProjectFileMap): File | undefined {
-//   for (let filePath of getAlternateFileNames(file.pathAbsolute)) {
-//     let mFile = fileMap.allFiles.get(filePath);
-//     if (mFile) {
-//       return mFile;
-//     }
-//   }
-//   return undefined;
-// }
-
-export function createToken(kind: TokenKind, pos: Position, text?: string, literal?: BrsType): Token {
-  return {
-    kind: kind,
-    text: text || kind.toString(),
-    isReserved: !text || text === kind.toString(),
-    range: createRange(pos),
-    literal: literal
-  };
-}
-
 export function createRange(pos: Position) {
   return Range.create(pos.line, pos.character, pos.line, pos.character);
 }
