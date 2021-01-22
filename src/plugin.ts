@@ -1,7 +1,6 @@
-import { BinaryExpression, CallExpression, CommentStatement, CompilerPlugin, createStringLiteral, createToken, createVisitor, EmptyStatement, ExpressionStatement, isBrsFile, isCallExpression, Program, Range, SourceLiteralExpression, TokenKind, VariableExpression, WalkMode } from 'brighterscript';
+import { BinaryExpression, CallExpression, CompilerPlugin, createToken, createVisitor, EmptyStatement, isBrsFile, Program, SourceLiteralExpression, TokenKind, VariableExpression, WalkMode } from 'brighterscript';
 
 import {
-  BrsFile,
   ProgramBuilder,
   TranspileObj,
 } from 'brighterscript';

@@ -1,5 +1,4 @@
-import { Position, Range, BrsFile, Token, TokenKind, XmlFile } from 'brighterscript';
-import { BrsType } from 'brighterscript/dist/brsTypes';
+import { Position, Range } from 'brighterscript';
 
 // import { ProjectFileMap } from '../fileProcessing/ProjectFileMap';
 
