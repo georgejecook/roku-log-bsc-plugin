@@ -1,74 +1,90 @@
-import { BinaryExpression, CallExpression, CompilerPlugin, createToken, createVisitor, EmptyStatement, isBrsFile, Program, SourceLiteralExpression, TokenKind, VariableExpression, WalkMode } from 'brighterscript';
+import type { CallExpression, CompilerPlugin, Program, ProgramBuilder, TranspileObj, VariableExpression } from 'brighterscript';
+import { createToken, createVisitor, EmptyStatement, isBrsFile, SourceLiteralExpression, TokenKind, WalkMode } from 'brighterscript';
 
-import {
-  ProgramBuilder,
-  TranspileObj,
-} from 'brighterscript';
+import * as fs from 'fs-extra';
 
 
-let rokuLogConfig: {
-  strip: true,
-  insertPkgPath: true
-};
-
-class RokuLogPlugin implements CompilerPlugin {
-  public name = 'log-plugin';
-
-  beforeProgramCreate(builder: ProgramBuilder): void {
-    rokuLogConfig = (builder.options as any).rokuLog || {
-      strip: false,
-      insertPkgPath: true
+export class RokuLogPlugin implements CompilerPlugin {
+    public name = 'log-plugin';
+    public rokuLogConfig = {
+        strip: true,
+        insertPkgPath: true,
+        removeComments: true
     };
-  }
 
-  beforeProgramTranspile(program: Program, entries: TranspileObj[]) {
-    for (let filePath in program.files) {
-      let file = program.files[filePath];
-      file.needsTranspiled = true;
+    beforeProgramCreate(builder: ProgramBuilder): void {
+        this.rokuLogConfig = { ...this.rokuLogConfig, ...(builder.options as any).rokuLog };
     }
-  }
 
-  beforeFileTranspile(entry: TranspileObj) {
-    if (isBrsFile(entry.file)) {
-      const parser = entry.file.parser;
-      // console.log('>>>', entry.file);
-      for (let expr of parser.references.functionExpressions) {
-        expr.body.walk(createVisitor({
-          ExpressionStatement: (es) => {
+    beforeProgramTranspile(program: Program, entries: TranspileObj[]) {
+        for (let filePath in program.files) {
+            let file = program.files[filePath];
+            file.needsTranspiled = true;
+        }
+    }
 
-            let ce = es.expression as CallExpression;
-            if (ce) {
-              let ve = ce.callee as VariableExpression;
-              if (ve) {
-                const logMethodRegex = /log(error|warn|info|method|verbose|debug)/i;
-                try {
-                  if (ve.name && logMethodRegex.test(ve.name.text)) {
-                    if (rokuLogConfig.strip) {
-                      return new EmptyStatement();
-                    } else if (rokuLogConfig.insertPkgPath) {
-                      const t = createToken(TokenKind.SourceLocationLiteral, '', ce.range);
-                      var sourceExpression = new SourceLiteralExpression(t);
+    beforeFileTranspile(entry: TranspileObj) {
+        let visitedLineNumbers = {};
+        if (isBrsFile(entry.file)) {
+            const parser = entry.file.parser;
+            let logVisitor = createVisitor({
+                ExpressionStatement: (es) => {
 
-                      if (ce.args.length > 0) {
-                        ce.args[0] = new BinaryExpression(sourceExpression, createToken(TokenKind.Plus, '+ " " + ', ce.range), ce.args[0]);
-                      } else {
-                        ce.args.push(sourceExpression);
-                      }
+                    let ce = es.expression as CallExpression;
+                    if (ce) {
+                        let ve = ce.callee as VariableExpression;
+                        if (ve && !visitedLineNumbers[`${ce.range.start.line}`]) {
+                            const logMethodRegex = /log(error|warn|info|method|verbose|debug)/i;
+                            try {
+                                if (ve.name && logMethodRegex.test(ve.name.text)) {
+                                    if (this.rokuLogConfig.strip) {
+                                        return new EmptyStatement();
+                                    } else if (this.rokuLogConfig.insertPkgPath) {
+                                        const t = createToken(TokenKind.SourceLocationLiteral, '', ce.range);
+                                        let sourceExpression = new SourceLiteralExpression(t);
+                                        if (ce.args.length > 0) {
+                                            ce.args.splice(0, 0, sourceExpression);
+                                        } else {
+                                            ce.args.push(sourceExpression);
+                                        }
+                                        visitedLineNumbers[`${ce.range.start.line}`] = true;
+                                    }
+                                }
+
+                            } catch (e) {
+                                console.log(`Error parsing file: ${entry.file.pkgPath} ${e.getMessage()}`);
+                            }
+                        }
                     }
-                  }
-                } catch (e) {
-                  console.log(`Error parsing file: ${entry.file.pkgPath} ${e.getMessage()}`);
+                    return es;
                 }
-              }
+            });
+            for (let expr of parser.references.functionExpressions) {
+                expr.body.walk(logVisitor, { walkMode: WalkMode.visitAllRecursive });
             }
-            return es;
-          }
-        }), { walkMode: WalkMode.visitAllRecursive });
-      }
+            for (let expr of parser.references.classStatements) {
+                expr.walk(logVisitor, { walkMode: WalkMode.visitAllRecursive });
+            }
+            for (let expr of parser.references.namespaceStatements) {
+                expr.walk(logVisitor, { walkMode: WalkMode.visitAllRecursive });
+            }
+        }
     }
-  }
+
+    afterFileTranspile(entry: TranspileObj) {
+        if (this.rokuLogConfig.removeComments) {
+            let text = fs.readFileSync(entry.outputPath, 'utf8');
+            if (entry.outputPath.endsWith('.xml')) {
+                text = text.replace(/<!(--.*?--)?>/gim, '');
+            } else {
+                text = text.replace(/^(?: *|\t*)('[^\n]*)/gim, '');
+            }
+
+            fs.writeFileSync(entry.outputPath, text, 'utf8');
+        }
+    }
 }
 
-export default function () {
-  return new RokuLogPlugin();
-}
+export default () => {
+    return new RokuLogPlugin();
+};
