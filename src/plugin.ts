@@ -1,5 +1,6 @@
-import type { CallExpression, CompilerPlugin, Program, ProgramBuilder, TranspileObj, VariableExpression } from 'brighterscript';
-import { createToken, createVisitor, EmptyStatement, isBrsFile, SourceLiteralExpression, TokenKind, WalkMode } from 'brighterscript';
+import type { CompilerPlugin, Program, ProgramBuilder, TranspileObj } from 'brighterscript';
+
+import { isDottedGetExpression, isVariableExpression, createToken, createVisitor, EmptyStatement, isBrsFile, SourceLiteralExpression, TokenKind, WalkMode } from 'brighterscript';
 
 import * as fs from 'fs-extra';
 
@@ -28,35 +29,32 @@ export class RokuLogPlugin implements CompilerPlugin {
         if (isBrsFile(entry.file)) {
             const parser = entry.file.parser;
             let logVisitor = createVisitor({
-                ExpressionStatement: (es) => {
-
-                    let ce = es.expression as CallExpression;
-                    if (ce) {
-                        let ve = ce.callee as VariableExpression;
-                        if (ve && !visitedLineNumbers[`${ce.range.start.line}`]) {
-                            const logMethodRegex = /log(error|warn|info|method|verbose|debug)/i;
+                CallExpression: (ce) => {
+                    if (isDottedGetExpression(ce.callee) &&
+                    isDottedGetExpression(ce.callee.obj) &&
+                    ce.callee.obj.name.text === 'log' &&
+                    isVariableExpression(ce.callee.obj.obj) &&
+                    ce.callee.obj.obj.name.text === 'm') {
+                        if (!visitedLineNumbers[`${ce.range.start.line}`]) {
                             try {
-                                if (ve.name && logMethodRegex.test(ve.name.text)) {
-                                    if (this.rokuLogConfig.strip) {
-                                        return new EmptyStatement();
-                                    } else if (this.rokuLogConfig.insertPkgPath) {
-                                        const t = createToken(TokenKind.SourceLocationLiteral, '', ce.range);
-                                        let sourceExpression = new SourceLiteralExpression(t);
-                                        if (ce.args.length > 0) {
-                                            ce.args.splice(0, 0, sourceExpression);
-                                        } else {
-                                            ce.args.push(sourceExpression);
-                                        }
-                                        visitedLineNumbers[`${ce.range.start.line}`] = true;
+                                if (this.rokuLogConfig.strip) {
+                                    return new EmptyStatement();
+                                } else if (this.rokuLogConfig.insertPkgPath) {
+                                    const t = createToken(TokenKind.SourceLocationLiteral, '', ce.range);
+                                    let sourceExpression = new SourceLiteralExpression(t);
+                                    if (ce.args.length > 0) {
+                                        ce.args.splice(0, 0, sourceExpression);
+                                    } else {
+                                        ce.args.push(sourceExpression);
                                     }
+                                    visitedLineNumbers[`${ce.range.start.line}`] = true;
                                 }
-
                             } catch (e) {
                                 console.log(`Error parsing file: ${entry.file.pkgPath} ${e.getMessage()}`);
                             }
                         }
+                        return ce;
                     }
-                    return es;
                 }
             });
             for (let expr of parser.references.functionExpressions) {

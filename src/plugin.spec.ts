@@ -46,45 +46,44 @@ describe('RooibosPlugin', () => {
         it('strips logs', async () => {
             program.addOrReplaceFile('source/test.spec.bs', `
                 function f1()
-                    m.logInfo("i")
-                    m.logWarn("w")
-                    m.logError("e")
-                    m.logVerbose("v")
-                    m.logMethod("v")
+                    m.log.info("i")
+                    m.log.warn("w")
+                    m.log.error("e")
+                    m.log.verbose("v")
+                    m.log.method("v")
                 end function
 
                 namespace ns
                     function ns1()
-                        m.logInfo("i")
-                        m.logWarn("w")
-                        m.logError("e")
-                        m.logVerbose("v")
-                        m.logMethod("v")
+                        m.log.info("i")
+                        m.log.warn("w")
+                        m.log.error("e")
+                        m.log.verbose("v")
+                        m.log.method("v")
                     end function
                     class c1
                         function cm()
-                            m.logInfo("i")
-                            m.logWarn("w")
-                            m.logError("e")
-                            m.logVerbose("v")
-                            m.logMethod("v")
+                            m.log.info("i")
+                            m.log.warn("w")
+                            m.log.error("e")
+                            m.log.verbose("v")
+                            m.log.method("v")
                         end function
                     end class
                 end namespace
                 class c2
                     function cm()
-                        m.logInfo("i")
-                        m.logWarn("w")
-                        m.logError("e")
-                        m.logVerbose("v")
-                        m.logMethod("v")
+                        m.log.info("i")
+                        m.log.warn("w")
+                        m.log.error("e")
+                        m.log.verbose("v")
+                        m.log.method("v")
                     end function
                 end class
             `);
             program.validate();
             await builder.transpile();
 
-            expect(builder.getDiagnostics()).to.be.empty;
             let a = getContents('test.spec.brs');
             let b = trimLeading(`function f1()
 
@@ -142,38 +141,38 @@ describe('RooibosPlugin', () => {
         it('updates log lines', async () => {
             program.addOrReplaceFile('source/test.spec.bs', `
                 function f1()
-                    m.logInfo("i")
-                    m.logWarn("w")
-                    m.logError("e")
-                    m.logVerbose("v")
-                    m.logMethod("v")
+                    m.log.info("i")
+                    m.log.warn("w")
+                    m.log.error("e")
+                    m.log.verbose("v")
+                    m.log.method("v")
                 end function
 
                 namespace ns
                     function ns1()
-                        m.logInfo("i")
-                        m.logWarn("w")
-                        m.logError("e")
-                        m.logVerbose("v")
-                        m.logMethod("v")
+                        m.log.info("i")
+                        m.log.warn("w")
+                        m.log.error("e")
+                        m.log.verbose("v")
+                        m.log.method("v")
                     end function
                     class c1
                         function cm()
-                            m.logInfo("i")
-                            m.logWarn("w")
-                            m.logError("e")
-                            m.logVerbose("v")
-                            m.logMethod("v")
+                            m.log.info("i")
+                            m.log.warn("w")
+                            m.log.error("e")
+                            m.log.verbose("v")
+                            m.log.method("v")
                         end function
                     end class
                 end namespace
                 class c2
                     function cm()
-                        m.logInfo("i")
-                        m.logWarn("w")
-                        m.logError("e")
-                        m.logVerbose("v")
-                        m.logMethod("v")
+                        m.log.info("i")
+                        m.log.warn("w")
+                        m.log.error("e")
+                        m.log.verbose("v")
+                        m.log.method("v")
                     end function
                 end class
             `);
@@ -182,32 +181,31 @@ describe('RooibosPlugin', () => {
             plugin.rokuLogConfig.insertPkgPath = true;
             await builder.transpile();
 
-            expect(builder.getDiagnostics()).to.be.empty;
             let a = getContents('test.spec.brs');
             let b = trimLeading(`function f1()
-            m.logInfo("FILE_PATH:3", "i")
-            m.logWarn("FILE_PATH:4", "w")
-            m.logError("FILE_PATH:5", "e")
-            m.logVerbose("FILE_PATH:6", "v")
-            m.logMethod("FILE_PATH:7", "v")
+            m.log.info("FILE_PATH:3", "i")
+            m.log.warn("FILE_PATH:4", "w")
+            m.log.error("FILE_PATH:5", "e")
+            m.log.verbose("FILE_PATH:6", "v")
+            m.log.method("FILE_PATH:7", "v")
             end function
             function ns_ns1()
-            m.logInfo("FILE_PATH:12", "i")
-            m.logWarn("FILE_PATH:13", "w")
-            m.logError("FILE_PATH:14", "e")
-            m.logVerbose("FILE_PATH:15", "v")
-            m.logMethod("FILE_PATH:16", "v")
+            m.log.info("FILE_PATH:12", "i")
+            m.log.warn("FILE_PATH:13", "w")
+            m.log.error("FILE_PATH:14", "e")
+            m.log.verbose("FILE_PATH:15", "v")
+            m.log.method("FILE_PATH:16", "v")
             end function
             function __ns_c1_builder()
             instance = {}
             instance.new = sub()
             end sub
             instance.cm = function()
-            m.logInfo("FILE_PATH:20", "i")
-            m.logWarn("FILE_PATH:21", "w")
-            m.logError("FILE_PATH:22", "e")
-            m.logVerbose("FILE_PATH:23", "v")
-            m.logMethod("FILE_PATH:24", "v")
+            m.log.info("FILE_PATH:20", "i")
+            m.log.warn("FILE_PATH:21", "w")
+            m.log.error("FILE_PATH:22", "e")
+            m.log.verbose("FILE_PATH:23", "v")
+            m.log.method("FILE_PATH:24", "v")
             end function
             return instance
             end function
@@ -221,11 +219,11 @@ describe('RooibosPlugin', () => {
             instance.new = sub()
             end sub
             instance.cm = function()
-            m.logInfo("FILE_PATH:30", "i")
-            m.logWarn("FILE_PATH:31", "w")
-            m.logError("FILE_PATH:32", "e")
-            m.logVerbose("FILE_PATH:33", "v")
-            m.logMethod("FILE_PATH:34", "v")
+            m.log.info("FILE_PATH:30", "i")
+            m.log.warn("FILE_PATH:31", "w")
+            m.log.error("FILE_PATH:32", "e")
+            m.log.verbose("FILE_PATH:33", "v")
+            m.log.method("FILE_PATH:34", "v")
             end function
             return instance
             end function
@@ -243,45 +241,45 @@ describe('RooibosPlugin', () => {
 'test comment here
 function f1()
             'test comment here
-            m.logInfo("i")
-            m.logWarn("w")
-            m.logError("e")
-            m.logVerbose("v")
-            m.logMethod("v")
+            m.log.info("i")
+            m.log.warn("w")
+            m.log.error("e")
+            m.log.verbose("v")
+            m.log.method("v")
             end function
 
             '     test comment here
             namespace ns
             function ns1()
             '     test comment here
-            m.logInfo("i")
-            m.logWarn("w")
-            m.logError("e")
-            m.logVerbose("v")
-            m.logMethod("v")
+            m.log.info("i")
+            m.log.warn("w")
+            m.log.error("e")
+            m.log.verbose("v")
+            m.log.method("v")
             end function
             '     test comment here
             class c1
             '     test comment here
             function cm()
             '     test comment here
-            m.logInfo("i")
-            m.logWarn("w")
-            m.logError("e")
-                            m.logVerbose("v")
-                            m.logMethod("v")
+            m.log.info("i")
+            m.log.warn("w")
+            m.log.error("e")
+                            m.log.verbose("v")
+                            m.log.method("v")
                             end function
                             end class
                 end namespace
                 class c2
                 function cm()
-                m.logInfo("i")
-                        m.logWarn("w")
-                        m.logError("e")
+                m.log.info("i")
+                        m.log.warn("w")
+                        m.log.error("e")
                         '     test comment here
                         '     test comment here
-                        m.logVerbose("v")
-                        m.logMethod("v")
+                        m.log.verbose("v")
+                        m.log.method("v")
                     end function
                 end class
                 `);
@@ -291,25 +289,24 @@ function f1()
             plugin.rokuLogConfig.removeComments = false;
             await builder.transpile();
 
-            expect(builder.getDiagnostics()).to.be.empty;
             let a = getContents('test.spec.brs');
             let b = trimLeading(`'test comment here
             function f1()
             'test comment here
-            m.logInfo("i")
-            m.logWarn("w")
-            m.logError("e")
-            m.logVerbose("v")
-            m.logMethod("v")
+            m.log.info("i")
+            m.log.warn("w")
+            m.log.error("e")
+            m.log.verbose("v")
+            m.log.method("v")
             end function
             '     test comment here
             function ns_ns1()
             '     test comment here
-            m.logInfo("i")
-            m.logWarn("w")
-            m.logError("e")
-            m.logVerbose("v")
-            m.logMethod("v")
+            m.log.info("i")
+            m.log.warn("w")
+            m.log.error("e")
+            m.log.verbose("v")
+            m.log.method("v")
             end function
             '     test comment here
             function __ns_c1_builder()
@@ -319,11 +316,11 @@ function f1()
             '     test comment here
             instance.cm = function()
             '     test comment here
-            m.logInfo("i")
-            m.logWarn("w")
-            m.logError("e")
-            m.logVerbose("v")
-            m.logMethod("v")
+            m.log.info("i")
+            m.log.warn("w")
+            m.log.error("e")
+            m.log.verbose("v")
+            m.log.method("v")
             end function
             return instance
             end function
@@ -337,13 +334,13 @@ function f1()
             instance.new = sub()
             end sub
             instance.cm = function()
-            m.logInfo("i")
-            m.logWarn("w")
-            m.logError("e")
+            m.log.info("i")
+            m.log.warn("w")
+            m.log.error("e")
             '     test comment here
             '     test comment here
-            m.logVerbose("v")
-            m.logMethod("v")
+            m.log.verbose("v")
+            m.log.method("v")
             end function
             return instance
             end function
@@ -360,45 +357,45 @@ function f1()
 'test comment here
 function f1()
             'test comment here
-            m.logInfo("i")
-            m.logWarn("w")
-            m.logError("e")
-            m.logVerbose("v")
-            m.logMethod("v")
+            m.log.info("i")
+            m.log.warn("w")
+            m.log.error("e")
+            m.log.verbose("v")
+            m.log.method("v")
             end function
 
             '     test comment here
             namespace ns
             function ns1()
             '     test comment here
-            m.logInfo("i")
-            m.logWarn("w")
-            m.logError("e")
-            m.logVerbose("v")
-            m.logMethod("v")
+            m.log.info("i")
+            m.log.warn("w")
+            m.log.error("e")
+            m.log.verbose("v")
+            m.log.method("v")
             end function
             '     test comment here
             class c1
             '     test comment here
             function cm()
             '     test comment here
-            m.logInfo("i")
-            m.logWarn("w")
-            m.logError("e")
-                            m.logVerbose("v")
-                            m.logMethod("v")
+            m.log.info("i")
+            m.log.warn("w")
+            m.log.error("e")
+                            m.log.verbose("v")
+                            m.log.method("v")
                             end function
                             end class
                 end namespace
                 class c2
                 function cm()
-                m.logInfo("i")
-                        m.logWarn("w")
-                        m.logError("e")
+                m.log.info("i")
+                        m.log.warn("w")
+                        m.log.error("e")
                         '     test comment here
                         '     test comment here
-                        m.logVerbose("v")
-                        m.logMethod("v")
+                        m.log.verbose("v")
+                        m.log.method("v")
                     end function
                 end class
                 `);
@@ -408,24 +405,23 @@ function f1()
             plugin.rokuLogConfig.removeComments = true;
             await builder.transpile();
 
-            expect(builder.getDiagnostics()).to.be.empty;
             let a = getContents('test.spec.brs');
             let b = trimLeading(`function f1()
 
-            m.logInfo("i")
-            m.logWarn("w")
-            m.logError("e")
-            m.logVerbose("v")
-            m.logMethod("v")
+            m.log.info("i")
+            m.log.warn("w")
+            m.log.error("e")
+            m.log.verbose("v")
+            m.log.method("v")
             end function
 
             function ns_ns1()
 
-            m.logInfo("i")
-            m.logWarn("w")
-            m.logError("e")
-            m.logVerbose("v")
-            m.logMethod("v")
+            m.log.info("i")
+            m.log.warn("w")
+            m.log.error("e")
+            m.log.verbose("v")
+            m.log.method("v")
             end function
 
             function __ns_c1_builder()
@@ -435,11 +431,11 @@ function f1()
 
             instance.cm = function()
 
-            m.logInfo("i")
-            m.logWarn("w")
-            m.logError("e")
-            m.logVerbose("v")
-            m.logMethod("v")
+            m.log.info("i")
+            m.log.warn("w")
+            m.log.error("e")
+            m.log.verbose("v")
+            m.log.method("v")
             end function
             return instance
             end function
@@ -453,13 +449,13 @@ function f1()
             instance.new = sub()
             end sub
             instance.cm = function()
-            m.logInfo("i")
-            m.logWarn("w")
-            m.logError("e")
+            m.log.info("i")
+            m.log.warn("w")
+            m.log.error("e")
 
 
-            m.logVerbose("v")
-            m.logMethod("v")
+            m.log.verbose("v")
+            m.log.method("v")
             end function
             return instance
             end function
@@ -476,45 +472,45 @@ function f1()
 'test comment here
 function f1()
             'test comment here
-            m.logInfo("i")
-            m.logWarn("w")
-            m.logError("e")
-            m.logVerbose("v")
-            m.logMethod("v")
+            m.log.info("i")
+            m.log.warn("w")
+            m.log.error("e")
+            m.log.verbose("v")
+            m.log.method("v")
             end function
 
             '     test comment here
             namespace ns
             function ns1()
             '     test comment here
-            m.logInfo("i")
-            m.logWarn("w")
-            m.logError("e")
-            m.logVerbose("v")
-            m.logMethod("v")
+            m.log.info("i")
+            m.log.warn("w")
+            m.log.error("e")
+            m.log.verbose("v")
+            m.log.method("v")
             end function
             '     test comment here
             class c1
             '     test comment here
             function cm()
             '     test comment here
-            m.logInfo("i")
-            m.logWarn("w")
-            m.logError("e")
-                            m.logVerbose("v")
-                            m.logMethod("v")
+            m.log.info("i")
+            m.log.warn("w")
+            m.log.error("e")
+                            m.log.verbose("v")
+                            m.log.method("v")
                             end function
                             end class
                 end namespace
                 class c2
                 function cm()
-                m.logInfo("i")
-                        m.logWarn("w")
-                        m.logError("e")
+                m.log.info("i")
+                        m.log.warn("w")
+                        m.log.error("e")
                         '     test comment here
                         '     test comment here
-                        m.logVerbose("v")
-                        m.logMethod("v")
+                        m.log.verbose("v")
+                        m.log.method("v")
                     end function
                 end class
                 `);
@@ -524,7 +520,6 @@ function f1()
             plugin.rokuLogConfig.removeComments = true;
             await builder.transpile();
 
-            expect(builder.getDiagnostics()).to.be.empty;
             let a = getContents('test.spec.brs');
             let b = trimLeading(`function f1()
 
@@ -595,7 +590,7 @@ function normalizePaths(s: string) {
     return s.replace(/file:.*test.spec.bs/gim, 'FILE_PATH');
 }
 describe.skip('run a local project', () => {
-    it('sanity checks on parsing - only run this outside of ci', () => {
+    it.skip('sanity checks on parsing - only run this outside of ci', () => {
         let programBuilder = new ProgramBuilder();
         programBuilder.run({
             project: '/home/george/hope/applicaster/zapp-roku-app/bsconfig-test.json'

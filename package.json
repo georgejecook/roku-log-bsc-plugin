@@ -45,7 +45,7 @@
     "clean": "rm -rf ./dist && mkdir dist",
     "compile": "npm run clean && tsc -p .",
     "prepublishOnly": "npm run build",
-    "tslint": "tslint ./src/**/*.ts",
+    "lint": "eslint \"src/**/*.ts\"",
     "build": "npm run compile",
     "cli": "npm run compile && npm unlink && npm link",
     "test": "TS_NODE_TRANSPILE_ONLY=true mocha --full-trace --bail",
