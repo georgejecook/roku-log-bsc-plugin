@@ -1,6 +1,6 @@
 {
     "name": "roku-log-bsc-plugin",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "description": "Visual studio plugin for roku logger",
     "files": [
         "dist/**/!(*.spec.*)*"
@@ -23,7 +23,7 @@
         "@types/sinon": "^9.0.4",
         "@typescript-eslint/eslint-plugin": "^4.4.1",
         "@typescript-eslint/parser": "^4.4.1",
-        "brighterscript": "/home/george/hope/open-source/vsc/brighterscript",
+        "brighterscript": "^0.33.0",
         "chai": "^4.2.0",
         "chai-files": "^1.4.0",
         "chai-subset": "^1.6.0",
