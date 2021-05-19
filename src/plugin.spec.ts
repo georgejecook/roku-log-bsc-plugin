@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import PluginInterface from 'brighterscript/dist/PluginInterface';
 import { standardizePath as s } from './utils/Utils';
 import * as fsExtra from 'fs-extra';
-let tmpPath = s`${process.cwd()}/tmp`;
+let tmpPath = s`/tmp/test`;
 let _rootDir = s`${tmpPath}/rootDir`;
 let _stagingFolderPath = s`${tmpPath}/staging`;
 
@@ -185,29 +185,29 @@ describe('RooibosPlugin', () => {
 
             let a = getContents('test.spec.brs');
             let b = trimLeading(`function f1()
-            m.log.info("FILE_PATH:3", "i")
-            m.log.warn("FILE_PATH:4", "w")
-            m.log.error("FILE_PATH:5", "e")
-            m.log.verbose("FILE_PATH:6", "v")
-            m.log.method("FILE_PATH:7", "v")
+            m.log.info("file" + ":///tmp/test/rootDir/source/test.spec.bs:3", "i")
+            m.log.warn("file" + ":///tmp/test/rootDir/source/test.spec.bs:4", "w")
+            m.log.error("file" + ":///tmp/test/rootDir/source/test.spec.bs:5", "e")
+            m.log.verbose("file" + ":///tmp/test/rootDir/source/test.spec.bs:6", "v")
+            m.log.method("file" + ":///tmp/test/rootDir/source/test.spec.bs:7", "v")
             end function
             function ns_ns1()
-            m.log.info("FILE_PATH:12", "i")
-            m.log.warn("FILE_PATH:13", "w")
-            m.log.error("FILE_PATH:14", "e")
-            m.log.verbose("FILE_PATH:15", "v")
-            m.log.method("FILE_PATH:16", "v")
+            m.log.info("file" + ":///tmp/test/rootDir/source/test.spec.bs:12", "i")
+            m.log.warn("file" + ":///tmp/test/rootDir/source/test.spec.bs:13", "w")
+            m.log.error("file" + ":///tmp/test/rootDir/source/test.spec.bs:14", "e")
+            m.log.verbose("file" + ":///tmp/test/rootDir/source/test.spec.bs:15", "v")
+            m.log.method("file" + ":///tmp/test/rootDir/source/test.spec.bs:16", "v")
             end function
             function __ns_c1_builder()
             instance = {}
             instance.new = sub()
             end sub
             instance.cm = function()
-            m.log.info("FILE_PATH:20", "i")
-            m.log.warn("FILE_PATH:21", "w")
-            m.log.error("FILE_PATH:22", "e")
-            m.log.verbose("FILE_PATH:23", "v")
-            m.log.method("FILE_PATH:24", "v")
+            m.log.info("file" + ":///tmp/test/rootDir/source/test.spec.bs:20", "i")
+            m.log.warn("file" + ":///tmp/test/rootDir/source/test.spec.bs:21", "w")
+            m.log.error("file" + ":///tmp/test/rootDir/source/test.spec.bs:22", "e")
+            m.log.verbose("file" + ":///tmp/test/rootDir/source/test.spec.bs:23", "v")
+            m.log.method("file" + ":///tmp/test/rootDir/source/test.spec.bs:24", "v")
             end function
             return instance
             end function
@@ -221,11 +221,11 @@ describe('RooibosPlugin', () => {
             instance.new = sub()
             end sub
             instance.cm = function()
-            m.log.info("FILE_PATH:30", "i")
-            m.log.warn("FILE_PATH:31", "w")
-            m.log.error("FILE_PATH:32", "e")
-            m.log.verbose("FILE_PATH:33", "v")
-            m.log.method("FILE_PATH:34", "v")
+            m.log.info("file" + ":///tmp/test/rootDir/source/test.spec.bs:30", "i")
+            m.log.warn("file" + ":///tmp/test/rootDir/source/test.spec.bs:31", "w")
+            m.log.error("file" + ":///tmp/test/rootDir/source/test.spec.bs:32", "e")
+            m.log.verbose("file" + ":///tmp/test/rootDir/source/test.spec.bs:33", "v")
+            m.log.method("file" + ":///tmp/test/rootDir/source/test.spec.bs:34", "v")
             end function
             return instance
             end function
