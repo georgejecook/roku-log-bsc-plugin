@@ -10,6 +10,7 @@
         "test": "test"
     },
     "dependencies": {
+        "bslib": "npm:@rokucommunity/bslib@^0.1.1",
         "@types/node": "^14.14.16",
         "source-map": "^0.7.3",
         "stringify-object": "^3.3.0",
@@ -23,7 +24,7 @@
         "@types/sinon": "^9.0.4",
         "@typescript-eslint/eslint-plugin": "^4.4.1",
         "@typescript-eslint/parser": "^4.4.1",
-        "brighterscript": "^0.37.4",
+        "brighterscript": "file:../../vsc/brighterscript",
         "chai": "^4.2.0",
         "chai-files": "^1.4.0",
         "chai-subset": "^1.6.0",

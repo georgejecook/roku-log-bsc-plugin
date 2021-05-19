@@ -27,11 +27,13 @@ describe('RooibosPlugin', () => {
         fsExtra.ensureDirSync(tmpPath);
 
         builder = new ProgramBuilder();
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         builder.options = util.normalizeAndResolveConfig(options);
         builder.program = new Program(builder.options);
         program = builder.program;
-        builder.plugins = new PluginInterface([plugin], undefined);
-        program.plugins = new PluginInterface([plugin], undefined);
+        program.logger = builder.logger;
+        builder.plugins = new PluginInterface([plugin], builder.logger);
+        program.plugins = new PluginInterface([plugin], builder.logger);
         program.createSourceScope(); //ensure source scope is created
         plugin.beforeProgramCreate(builder);
     });
@@ -589,18 +591,8 @@ function f1()
 function normalizePaths(s: string) {
     return s.replace(/file:.*test.spec.bs/gim, 'FILE_PATH');
 }
-describe.skip('run a local project', () => {
-    it.skip('sanity checks on parsing - only run this outside of ci', () => {
-        let programBuilder = new ProgramBuilder();
-        programBuilder.run({
-            project: '/home/george/hope/applicaster/zapp-roku-app/bsconfig-test.json'
-            // project: '/home/george/hope/open-source/maestro/swerve-app/bsconfig-test.json'
-        }).catch(e => {
-            console.error(e);
-        });
-    });
-});
 
 function getContents(filename: string) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return trimLeading(fsExtra.readFileSync(s`${_stagingFolderPath}/source/${filename}`).toString());
 }
