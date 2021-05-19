@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import PluginInterface from 'brighterscript/dist/PluginInterface';
 import { standardizePath as s } from './utils/Utils';
 import * as fsExtra from 'fs-extra';
-let tmpPath = s`${process.cwd()}/tmp`;
+let tmpPath = s`/tmp/test`;
 let _rootDir = s`${tmpPath}/rootDir`;
 let _stagingFolderPath = s`${tmpPath}/staging`;
 
@@ -27,11 +27,13 @@ describe('RooibosPlugin', () => {
         fsExtra.ensureDirSync(tmpPath);
 
         builder = new ProgramBuilder();
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         builder.options = util.normalizeAndResolveConfig(options);
         builder.program = new Program(builder.options);
         program = builder.program;
-        builder.plugins = new PluginInterface([plugin], undefined);
-        program.plugins = new PluginInterface([plugin], undefined);
+        program.logger = builder.logger;
+        builder.plugins = new PluginInterface([plugin], builder.logger);
+        program.plugins = new PluginInterface([plugin], builder.logger);
         program.createSourceScope(); //ensure source scope is created
         plugin.beforeProgramCreate(builder);
     });
@@ -183,29 +185,29 @@ describe('RooibosPlugin', () => {
 
             let a = getContents('test.spec.brs');
             let b = trimLeading(`function f1()
-            m.log.info("FILE_PATH:3", "i")
-            m.log.warn("FILE_PATH:4", "w")
-            m.log.error("FILE_PATH:5", "e")
-            m.log.verbose("FILE_PATH:6", "v")
-            m.log.method("FILE_PATH:7", "v")
+            m.log.info("file" + ":///tmp/test/rootDir/source/test.spec.bs:3", "i")
+            m.log.warn("file" + ":///tmp/test/rootDir/source/test.spec.bs:4", "w")
+            m.log.error("file" + ":///tmp/test/rootDir/source/test.spec.bs:5", "e")
+            m.log.verbose("file" + ":///tmp/test/rootDir/source/test.spec.bs:6", "v")
+            m.log.method("file" + ":///tmp/test/rootDir/source/test.spec.bs:7", "v")
             end function
             function ns_ns1()
-            m.log.info("FILE_PATH:12", "i")
-            m.log.warn("FILE_PATH:13", "w")
-            m.log.error("FILE_PATH:14", "e")
-            m.log.verbose("FILE_PATH:15", "v")
-            m.log.method("FILE_PATH:16", "v")
+            m.log.info("file" + ":///tmp/test/rootDir/source/test.spec.bs:12", "i")
+            m.log.warn("file" + ":///tmp/test/rootDir/source/test.spec.bs:13", "w")
+            m.log.error("file" + ":///tmp/test/rootDir/source/test.spec.bs:14", "e")
+            m.log.verbose("file" + ":///tmp/test/rootDir/source/test.spec.bs:15", "v")
+            m.log.method("file" + ":///tmp/test/rootDir/source/test.spec.bs:16", "v")
             end function
             function __ns_c1_builder()
             instance = {}
             instance.new = sub()
             end sub
             instance.cm = function()
-            m.log.info("FILE_PATH:20", "i")
-            m.log.warn("FILE_PATH:21", "w")
-            m.log.error("FILE_PATH:22", "e")
-            m.log.verbose("FILE_PATH:23", "v")
-            m.log.method("FILE_PATH:24", "v")
+            m.log.info("file" + ":///tmp/test/rootDir/source/test.spec.bs:20", "i")
+            m.log.warn("file" + ":///tmp/test/rootDir/source/test.spec.bs:21", "w")
+            m.log.error("file" + ":///tmp/test/rootDir/source/test.spec.bs:22", "e")
+            m.log.verbose("file" + ":///tmp/test/rootDir/source/test.spec.bs:23", "v")
+            m.log.method("file" + ":///tmp/test/rootDir/source/test.spec.bs:24", "v")
             end function
             return instance
             end function
@@ -219,11 +221,11 @@ describe('RooibosPlugin', () => {
             instance.new = sub()
             end sub
             instance.cm = function()
-            m.log.info("FILE_PATH:30", "i")
-            m.log.warn("FILE_PATH:31", "w")
-            m.log.error("FILE_PATH:32", "e")
-            m.log.verbose("FILE_PATH:33", "v")
-            m.log.method("FILE_PATH:34", "v")
+            m.log.info("file" + ":///tmp/test/rootDir/source/test.spec.bs:30", "i")
+            m.log.warn("file" + ":///tmp/test/rootDir/source/test.spec.bs:31", "w")
+            m.log.error("file" + ":///tmp/test/rootDir/source/test.spec.bs:32", "e")
+            m.log.verbose("file" + ":///tmp/test/rootDir/source/test.spec.bs:33", "v")
+            m.log.method("file" + ":///tmp/test/rootDir/source/test.spec.bs:34", "v")
             end function
             return instance
             end function
@@ -589,18 +591,8 @@ function f1()
 function normalizePaths(s: string) {
     return s.replace(/file:.*test.spec.bs/gim, 'FILE_PATH');
 }
-describe.skip('run a local project', () => {
-    it.skip('sanity checks on parsing - only run this outside of ci', () => {
-        let programBuilder = new ProgramBuilder();
-        programBuilder.run({
-            project: '/home/george/hope/applicaster/zapp-roku-app/bsconfig-test.json'
-            // project: '/home/george/hope/open-source/maestro/swerve-app/bsconfig-test.json'
-        }).catch(e => {
-            console.error(e);
-        });
-    });
-});
 
 function getContents(filename: string) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return trimLeading(fsExtra.readFileSync(s`${_stagingFolderPath}/source/${filename}`).toString());
 }
