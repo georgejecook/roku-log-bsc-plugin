@@ -14,7 +14,7 @@ export function trimLeading(text: string) {
     }
 
     for (let i = 0; i < lines.length; i++) {
-        lines[i] = lines[i].trimLeft();
+        // lines[i] = lines[i].trimLeft();
     }
 
     //apply the trim to each line

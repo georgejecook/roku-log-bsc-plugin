@@ -9,6 +9,7 @@ let _rootDir = s`${tmpPath}/rootDir`;
 let _stagingFolderPath = s`${tmpPath}/staging`;
 
 import { trimLeading } from './utils/testHelpers.spec';
+import * as trim from 'trim-whitespace';
 import { RokuLogPlugin } from './plugin';
 
 describe('RooibosPlugin', () => {
@@ -45,7 +46,7 @@ describe('RooibosPlugin', () => {
     });
 
     describe('basic tests', () => {
-        it('strips logs', async () => {
+        it.only('strips logs', async () => {
             program.addOrReplaceFile('source/test.spec.bs', `
                 function f1()
                     m.log.info("i")
@@ -86,8 +87,8 @@ describe('RooibosPlugin', () => {
             program.validate();
             await builder.transpile();
 
-            let a = getContents('test.spec.brs');
-            let b = trimLeading(`function f1()
+            let a = trim(getContents('test.spec.brs'));
+            let b = trim(`function f1()
 
 
 
@@ -102,40 +103,40 @@ describe('RooibosPlugin', () => {
 
             end function
             function __ns_c1_builder()
-            instance = {}
-            instance.new = sub()
-            end sub
-            instance.cm = function()
+                instance = {}
+                instance.new = sub()
+                end sub
+                instance.cm = function()
 
 
 
 
 
-            end function
-            return instance
+                end function
+                return instance
             end function
             function ns_c1()
-            instance = __ns_c1_builder()
-            instance.new()
-            return instance
+                instance = __ns_c1_builder()
+                instance.new()
+                return instance
             end function
             function __c2_builder()
-            instance = {}
-            instance.new = sub()
-            end sub
-            instance.cm = function()
+                instance = {}
+                instance.new = sub()
+                end sub
+                instance.cm = function()
 
 
 
 
 
-            end function
-            return instance
+                end function
+                return instance
             end function
             function c2()
-            instance = __c2_builder()
-            instance.new()
-            return instance
+                instance = __c2_builder()
+                instance.new()
+                return instance
             end function`);
             expect(a).to.equal(b);
         });
