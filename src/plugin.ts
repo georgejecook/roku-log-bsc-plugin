@@ -1,4 +1,4 @@
-import type { CompilerPlugin, Program, ProgramBuilder, TranspileObj } from 'brighterscript';
+import type { AfterFileTranspileEvent, CompilerPlugin, Program, ProgramBuilder, TranspileObj } from 'brighterscript';
 
 import { isDottedGetExpression, isVariableExpression, createToken, createVisitor, EmptyStatement, isBrsFile, SourceLiteralExpression, TokenKind, WalkMode } from 'brighterscript';
 
@@ -69,16 +69,18 @@ export class RokuLogPlugin implements CompilerPlugin {
         }
     }
 
-    afterFileTranspile(entry: TranspileObj) {
+    afterFileTranspile(event: AfterFileTranspileEvent) {
         if (this.rokuLogConfig.removeComments) {
-            let text = fs.readFileSync(entry.outputPath, 'utf8');
-            if (entry.outputPath.endsWith('.xml')) {
+            // let text = fs.readFileSync(event.outputPath, 'utf8');
+            let text = event.code;
+            if (event.outputPath.endsWith('.xml')) {
                 text = text.replace(/<!(--.*?--)?>/gim, '');
             } else {
                 text = text.replace(/^(?: *|\t*)('[^\n]*)/gim, '');
             }
 
-            fs.writeFileSync(entry.outputPath, text, 'utf8');
+            // fs.writeFileSync(event.outputPath, text, 'utf8');
+            event.code = text;
         }
     }
 }
