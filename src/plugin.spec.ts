@@ -8,7 +8,6 @@ let tmpPath = s`/tmp/test`;
 let _rootDir = s`${tmpPath}/rootDir`;
 let _stagingFolderPath = s`${tmpPath}/staging`;
 
-import { trimLeading } from './utils/testHelpers.spec';
 import * as trim from 'trim-whitespace';
 import { RokuLogPlugin } from './plugin';
 
@@ -47,7 +46,7 @@ describe('RooibosPlugin', () => {
 
     describe('basic tests', () => {
         it('strips logs', async () => {
-            program.addOrReplaceFile('source/test.spec.bs', `
+            program.setFile('source/test.spec.bs', `
                 function f1()
                     m.log.info("i")
                     m.log.warn("w")
@@ -142,7 +141,7 @@ describe('RooibosPlugin', () => {
         });
 
         it('updates log lines', async () => {
-            program.addOrReplaceFile('source/test.spec.bs', `
+            program.setFile('source/test.spec.bs', `
                 function f1()
                     m.log.info("i")
                     m.log.warn("w")
@@ -184,8 +183,8 @@ describe('RooibosPlugin', () => {
             plugin.rokuLogConfig.insertPkgPath = true;
             await builder.transpile();
 
-            let a = getContents('test.spec.brs');
-            let b = trimLeading(`function f1()
+            let a = trim(getContents('test.spec.brs'));
+            let b = trim(`function f1()
             m.log.info("file" + ":///tmp/test/rootDir/source/test.spec.bs:3", "i")
             m.log.warn("file" + ":///tmp/test/rootDir/source/test.spec.bs:4", "w")
             m.log.error("file" + ":///tmp/test/rootDir/source/test.spec.bs:5", "e")
@@ -240,7 +239,7 @@ describe('RooibosPlugin', () => {
         });
 
         it('leaves comments', async () => {
-            program.addOrReplaceFile('source/test.spec.bs', `
+            program.setFile('source/test.spec.bs', `
 'test comment here
 function f1()
             'test comment here
@@ -292,8 +291,8 @@ function f1()
             plugin.rokuLogConfig.removeComments = false;
             await builder.transpile();
 
-            let a = getContents('test.spec.brs');
-            let b = trimLeading(`'test comment here
+            let a = trim(getContents('test.spec.brs'));
+            let b = trim(`'test comment here
             function f1()
             'test comment here
             m.log.info("i")
@@ -356,7 +355,7 @@ function f1()
             expect(normalizePaths(a)).to.equal(normalizePaths(b));
         });
         it('removes comments', async () => {
-            program.addOrReplaceFile('source/test.spec.bs', `
+            program.setFile('source/test.spec.bs', `
 'test comment here
 function f1()
             'test comment here
@@ -408,8 +407,9 @@ function f1()
             plugin.rokuLogConfig.removeComments = true;
             await builder.transpile();
 
-            let a = getContents('test.spec.brs');
-            let b = trimLeading(`function f1()
+            let a = trim(getContents('test.spec.brs'));
+            let b = trim(`
+            function f1()
 
             m.log.info("i")
             m.log.warn("w")
@@ -468,10 +468,10 @@ function f1()
             return instance
             end function`);
 
-            expect(normalizePaths(a)).to.equal(normalizePaths(b));
+            expect(a).to.equal(b);
         });
         it('removes comments and strips', async () => {
-            program.addOrReplaceFile('source/test.spec.bs', `
+            program.setFile('source/test.spec.bs', `
 'test comment here
 function f1()
             'test comment here
@@ -523,8 +523,9 @@ function f1()
             plugin.rokuLogConfig.removeComments = true;
             await builder.transpile();
 
-            let a = getContents('test.spec.brs');
-            let b = trimLeading(`function f1()
+            let a = trim(getContents('test.spec.brs'));
+            let b = trim(`
+            function f1()
 
 
 
@@ -595,5 +596,5 @@ function normalizePaths(s: string) {
 
 function getContents(filename: string) {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    return trimLeading(fsExtra.readFileSync(s`${_stagingFolderPath}/source/${filename}`).toString());
+    return trim(fsExtra.readFileSync(s`${_stagingFolderPath}/source/${filename}`).toString());
 }
