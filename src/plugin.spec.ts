@@ -46,7 +46,7 @@ describe('RooibosPlugin', () => {
     });
 
     describe('basic tests', () => {
-        it.only('strips logs', async () => {
+        it('strips logs', async () => {
             program.addOrReplaceFile('source/test.spec.bs', `
                 function f1()
                     m.log.info("i")
