@@ -38,10 +38,12 @@ export class RokuLogPlugin implements CompilerPlugin {
                         if (!visitedLineNumbers[`${ce.range.start.line}`]) {
                             try {
                                 if (this.rokuLogConfig.strip) {
+                                    //BRON_AST_EDIT_HERE
                                     return new EmptyStatement();
                                 } else if (this.rokuLogConfig.insertPkgPath) {
                                     const t = createToken(TokenKind.SourceLocationLiteral, '', ce.range);
                                     let sourceExpression = new SourceLiteralExpression(t);
+                                    //BRON_AST_EDIT_HERE
                                     if (ce.args.length > 0) {
                                         ce.args.splice(0, 0, sourceExpression);
                                     } else {
@@ -72,6 +74,7 @@ export class RokuLogPlugin implements CompilerPlugin {
     afterFileTranspile(event: AfterFileTranspileEvent) {
         if (this.rokuLogConfig.removeComments) {
             // let text = fs.readFileSync(event.outputPath, 'utf8');
+            //BRON_AST_EDIT_HERE (crude one though)
             let text = event.code;
             if (event.outputPath.endsWith('.xml')) {
                 text = text.replace(/<!(--.*?--)?>/gim, '');
