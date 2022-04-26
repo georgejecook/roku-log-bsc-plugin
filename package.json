@@ -21,6 +21,7 @@
     "devDependencies": {
         "@types/chai": "^4.1.2",
         "@types/expect": "^24.3.0",
+        "@types/fs-extra": "^9.0.13",
         "@types/mocha": "^5.2.7",
         "@types/sinon": "^9.0.4",
         "@typescript-eslint/eslint-plugin": "^4.4.1",
@@ -36,28 +37,31 @@
         "minimatch": "^3.0.4",
         "mocha": "^7.1.1",
         "nyc": "^15.1.0",
+        "outdent": "^0.8.0",
         "roku-deploy": "^3.2.4",
         "sinon": "^9.0.2",
         "source-map-support": "^0.5.13",
         "trim-whitespace": "^1.3.3",
         "ts-node": "^9.0.0",
         "typescript": "^3.8.3",
-        "typescript-formatter": "^7.2.2"
+        "typescript-formatter": "^7.2.2",
+        "undent": "^0.1.0"
     },
     "peerDependencies": {
         "brighterscript": "^0.45.3"
     },
     "scripts": {
+        "preversion": "npm run build && npm run test && npm run lint",
         "clean": "rm -rf ./dist && mkdir dist",
         "compile": "npm run clean && tsc -p .",
         "prepublishOnly": "npm run build",
         "lint": "eslint \"src/**/*.ts\"",
         "build": "npm run compile",
         "cli": "npm run compile && npm unlink && npm link",
-        "test": "TS_NODE_TRANSPILE_ONLY=true mocha --full-trace --bail",
+        "test": "mocha",
         "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
-        "publish-npm": "npm run test && npm publish",
-        "publish-npm:beta": "npm run test && npm publish --tag=beta",
+        "publish-npm": "npm run preversion && npm publish",
+        "publish-npm:beta": "npm run preversion && npm publish --tag=beta",
         "local": "ts-node scripts/install-local.js",
         "remote": "ts-node scripts/install-npm.js"
     },
@@ -69,6 +73,10 @@
         "britherscript"
     ],
     "author": "George Cook",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/georgejecook/roku-log-bsc-plugin.git"
+    },
     "license": "ISC",
     "watch": {
         "test": {
