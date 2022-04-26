@@ -1,4 +1,4 @@
-import type { AfterFileTranspileEvent, CompilerPlugin, Program, ProgramBuilder, TranspileObj } from 'brighterscript';
+import type { AfterFileTranspileEvent, BeforeFileTranspileEvent, CompilerPlugin, Program, ProgramBuilder, TranspileObj } from 'brighterscript';
 
 import { isDottedGetExpression, isVariableExpression, createToken, createVisitor, EmptyStatement, isBrsFile, SourceLiteralExpression, TokenKind, WalkMode } from 'brighterscript';
 
@@ -24,33 +24,33 @@ export class RokuLogPlugin implements CompilerPlugin {
         }
     }
 
-    beforeFileTranspile(entry: TranspileObj) {
+    beforeFileTranspile(event: BeforeFileTranspileEvent) {
         let visitedLineNumbers = {};
-        if (isBrsFile(entry.file)) {
-            const parser = entry.file.parser;
+        if (isBrsFile(event.file)) {
+            const parser = event.file.parser;
             let logVisitor = createVisitor({
                 CallExpression: (ce) => {
                     if (isDottedGetExpression(ce.callee) &&
-                    isDottedGetExpression(ce.callee.obj) &&
-                    ce.callee.obj.name.text === 'log' &&
-                    isVariableExpression(ce.callee.obj.obj) &&
-                    ce.callee.obj.obj.name.text === 'm') {
+                        isDottedGetExpression(ce.callee.obj) &&
+                        ce.callee.obj.name.text === 'log' &&
+                        isVariableExpression(ce.callee.obj.obj) &&
+                        ce.callee.obj.obj.name.text === 'm') {
                         if (!visitedLineNumbers[`${ce.range.start.line}`]) {
                             try {
                                 if (this.rokuLogConfig.strip) {
-                                    return new EmptyStatement();
+                                    event.editor.overrideTranspileResult(ce, '');
                                 } else if (this.rokuLogConfig.insertPkgPath) {
                                     const t = createToken(TokenKind.SourceLocationLiteral, '', ce.range);
                                     let sourceExpression = new SourceLiteralExpression(t);
                                     if (ce.args.length > 0) {
-                                        ce.args.splice(0, 0, sourceExpression);
+                                        event.editor.addToArray(ce.args, 0, sourceExpression);
                                     } else {
-                                        ce.args.push(sourceExpression);
+                                        event.editor.addToArray(ce.args, ce.args.length, sourceExpression);
                                     }
                                     visitedLineNumbers[`${ce.range.start.line}`] = true;
                                 }
                             } catch (e) {
-                                console.log(`Error parsing file: ${entry.file.pkgPath} ${e.getMessage()}`);
+                                console.log(`Error parsing file: ${event.file.pkgPath} ${e.getMessage()}`);
                             }
                         }
                         return ce;
@@ -71,15 +71,12 @@ export class RokuLogPlugin implements CompilerPlugin {
 
     afterFileTranspile(event: AfterFileTranspileEvent) {
         if (this.rokuLogConfig.removeComments) {
-            // let text = fs.readFileSync(event.outputPath, 'utf8');
             let text = event.code;
             if (event.outputPath.endsWith('.xml')) {
                 text = text.replace(/<!(--.*?--)?>/gim, '');
             } else {
                 text = text.replace(/^(?: *|\t*)('[^\n]*)/gim, '');
             }
-
-            // fs.writeFileSync(event.outputPath, text, 'utf8');
             event.code = text;
         }
     }
