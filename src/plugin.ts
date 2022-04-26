@@ -71,16 +71,12 @@ export class RokuLogPlugin implements CompilerPlugin {
 
     afterFileTranspile(event: AfterFileTranspileEvent) {
         if (this.rokuLogConfig.removeComments) {
-            // let text = fs.readFileSync(event.outputPath, 'utf8');
-            //BRON_AST_EDIT_HERE (crude one though)
             let text = event.code;
             if (event.outputPath.endsWith('.xml')) {
                 text = text.replace(/<!(--.*?--)?>/gim, '');
             } else {
                 text = text.replace(/^(?: *|\t*)('[^\n]*)/gim, '');
             }
-
-            // fs.writeFileSync(event.outputPath, text, 'utf8');
             event.code = text;
         }
     }
