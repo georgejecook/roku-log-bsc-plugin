@@ -184,35 +184,37 @@ describe('RooibosPlugin', () => {
             plugin.rokuLogConfig.strip = false;
             plugin.rokuLogConfig.insertPkgPath = true;
             await builder.transpile();
+            //linux tests end up with too many slashes, so remove one to make the test happy
+            const tmpDir = tmpPath.replace(/^\//, '');
 
             expect(
                 getContents('test.spec.brs')
             ).to.equal(
                 undent`
                     function f1()
-                        m.log.info("file" + ":///${tmpPath}/rootDir/source/test.spec.bs:3", "i")
-                        m.log.warn("file" + ":///${tmpPath}/rootDir/source/test.spec.bs:4", "w")
-                        m.log.error("file" + ":///${tmpPath}/rootDir/source/test.spec.bs:5", "e")
-                        m.log.verbose("file" + ":///${tmpPath}/rootDir/source/test.spec.bs:6", "v")
-                        m.log.method("file" + ":///${tmpPath}/rootDir/source/test.spec.bs:7", "v")
+                        m.log.info("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:3", "i")
+                        m.log.warn("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:4", "w")
+                        m.log.error("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:5", "e")
+                        m.log.verbose("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:6", "v")
+                        m.log.method("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:7", "v")
                     end function
                     function ns_ns1()
-                        m.log.info("file" + ":///${tmpPath}/rootDir/source/test.spec.bs:12", "i")
-                        m.log.warn("file" + ":///${tmpPath}/rootDir/source/test.spec.bs:13", "w")
-                        m.log.error("file" + ":///${tmpPath}/rootDir/source/test.spec.bs:14", "e")
-                        m.log.verbose("file" + ":///${tmpPath}/rootDir/source/test.spec.bs:15", "v")
-                        m.log.method("file" + ":///${tmpPath}/rootDir/source/test.spec.bs:16", "v")
+                        m.log.info("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:12", "i")
+                        m.log.warn("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:13", "w")
+                        m.log.error("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:14", "e")
+                        m.log.verbose("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:15", "v")
+                        m.log.method("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:16", "v")
                     end function
                     function __ns_c1_builder()
                         instance = {}
                         instance.new = sub()
                         end sub
                         instance.cm = function()
-                            m.log.info("file" + ":///${tmpPath}/rootDir/source/test.spec.bs:20", "i")
-                            m.log.warn("file" + ":///${tmpPath}/rootDir/source/test.spec.bs:21", "w")
-                            m.log.error("file" + ":///${tmpPath}/rootDir/source/test.spec.bs:22", "e")
-                            m.log.verbose("file" + ":///${tmpPath}/rootDir/source/test.spec.bs:23", "v")
-                            m.log.method("file" + ":///${tmpPath}/rootDir/source/test.spec.bs:24", "v")
+                            m.log.info("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:20", "i")
+                            m.log.warn("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:21", "w")
+                            m.log.error("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:22", "e")
+                            m.log.verbose("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:23", "v")
+                            m.log.method("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:24", "v")
                         end function
                         return instance
                     end function
@@ -226,11 +228,11 @@ describe('RooibosPlugin', () => {
                         instance.new = sub()
                         end sub
                         instance.cm = function()
-                            m.log.info("file" + ":///${tmpPath}/rootDir/source/test.spec.bs:30", "i")
-                            m.log.warn("file" + ":///${tmpPath}/rootDir/source/test.spec.bs:31", "w")
-                            m.log.error("file" + ":///${tmpPath}/rootDir/source/test.spec.bs:32", "e")
-                            m.log.verbose("file" + ":///${tmpPath}/rootDir/source/test.spec.bs:33", "v")
-                            m.log.method("file" + ":///${tmpPath}/rootDir/source/test.spec.bs:34", "v")
+                            m.log.info("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:30", "i")
+                            m.log.warn("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:31", "w")
+                            m.log.error("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:32", "e")
+                            m.log.verbose("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:33", "v")
+                            m.log.method("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:34", "v")
                         end function
                         return instance
                     end function
