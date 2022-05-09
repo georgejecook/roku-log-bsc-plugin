@@ -1,6 +1,6 @@
 {
     "name": "roku-log-bsc-plugin",
-    "version": "0.5.3",
+    "version": "0.5.4",
     "description": "Visual studio plugin for roku logger",
     "files": [
         "dist/**/!(*.spec.*)*"
@@ -26,7 +26,7 @@
         "@types/sinon": "^9.0.4",
         "@typescript-eslint/eslint-plugin": "^4.4.1",
         "@typescript-eslint/parser": "^4.4.1",
-        "brighterscript": "0.49.0",
+        "brighterscript": "^0.49.0",
         "chai": "^4.2.0",
         "chai-files": "^1.4.0",
         "chai-subset": "^1.6.0",
@@ -48,7 +48,7 @@
         "undent": "^0.1.0"
     },
     "peerDependencies": {
-        "brighterscript": "0.49.0"
+        "brighterscript": "^0.49.0"
     },
     "scripts": {
         "preversion": "npm run build && npm run test && npm run lint",
