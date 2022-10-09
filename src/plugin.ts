@@ -1,14 +1,17 @@
-import type { AfterFileTranspileEvent, BeforeFileTranspileEvent, CompilerPlugin, Program, ProgramBuilder, TranspileObj } from 'brighterscript';
+import { AfterFileTranspileEvent, BeforeFileTranspileEvent, Block, CompilerPlugin, Expression, IfStatement, Program, ProgramBuilder, Statement, TranspileObj } from 'brighterscript';
 
-import { isDottedGetExpression, isVariableExpression, createToken, createVisitor, EmptyStatement, isBrsFile, SourceLiteralExpression, TokenKind, WalkMode } from 'brighterscript';
+import { Range, isDottedGetExpression, isVariableExpression, createToken, createVisitor, EmptyStatement, isBrsFile, SourceLiteralExpression, TokenKind, WalkMode } from 'brighterscript';
+import { BrsTranspileState } from 'brighterscript/dist/parser/BrsTranspileState';
 
 import * as fs from 'fs-extra';
+import { RawCodeStatement } from './RawCodeStatement';
 
 
 export class RokuLogPlugin implements CompilerPlugin {
     public name = 'log-plugin';
     public rokuLogConfig = {
         strip: true,
+        guard: true,
         insertPkgPath: true,
         removeComments: true
     };
@@ -27,33 +30,39 @@ export class RokuLogPlugin implements CompilerPlugin {
     beforeFileTranspile(event: BeforeFileTranspileEvent) {
         let visitedLineNumbers = {};
         if (isBrsFile(event.file)) {
+            let state = new BrsTranspileState(event.file);
             const parser = event.file.parser;
             let logVisitor = createVisitor({
-                CallExpression: (ce) => {
-                    if (isDottedGetExpression(ce.callee) &&
-                        isDottedGetExpression(ce.callee.obj) &&
-                        ce.callee.obj.name.text === 'log' &&
-                        isVariableExpression(ce.callee.obj.obj) &&
-                        ce.callee.obj.obj.name.text === 'm') {
-                        if (!visitedLineNumbers[`${ce.range.start.line}`]) {
+                CallExpression: (callExpression, parentNode, owner, key) => {
+                    if (isDottedGetExpression(callExpression.callee) &&
+                        isDottedGetExpression(callExpression.callee.obj) &&
+                        callExpression.callee.obj.name.text === 'log' &&
+                        isVariableExpression(callExpression.callee.obj.obj) &&
+                        callExpression.callee.obj.obj.name.text === 'm') {
+                        if (!visitedLineNumbers[`${callExpression.range.start.line}`]) {
                             try {
                                 if (this.rokuLogConfig.strip) {
-                                    event.editor.overrideTranspileResult(ce, '');
-                                } else if (this.rokuLogConfig.insertPkgPath) {
-                                    const t = createToken(TokenKind.SourceLocationLiteral, '', ce.range);
-                                    let sourceExpression = new SourceLiteralExpression(t);
-                                    if (ce.args.length > 0) {
-                                        event.editor.addToArray(ce.args, 0, sourceExpression);
-                                    } else {
-                                        event.editor.addToArray(ce.args, ce.args.length, sourceExpression);
+                                    event.editor.overrideTranspileResult(callExpression, '');
+                                } else {
+                                    if (this.rokuLogConfig.insertPkgPath) {
+                                        const t = createToken(TokenKind.SourceLocationLiteral, '', callExpression.range);
+                                        let sourceExpression = new SourceLiteralExpression(t);
+                                        if (callExpression.args.length > 0) {
+                                            event.editor.addToArray(callExpression.args, 0, sourceExpression);
+                                        } else {
+                                            event.editor.addToArray(callExpression.args, callExpression.args.length, sourceExpression);
+                                        }
+                                        visitedLineNumbers[`${callExpression.range.start.line}`] = true;
                                     }
-                                    visitedLineNumbers[`${ce.range.start.line}`] = true;
+                                    if (this.rokuLogConfig.guard) {
+                                        event.editor.setProperty(owner, key, new RawCodeStatement(`if m.__le = true then ${callExpression.transpile(state)}`));
+                                    }
                                 }
                             } catch (e) {
                                 console.log(`Error parsing file: ${event.file.pkgPath} ${e.getMessage()}`);
                             }
                         }
-                        return ce;
+                        return callExpression;
                     }
                 }
             });
@@ -80,6 +89,7 @@ export class RokuLogPlugin implements CompilerPlugin {
             event.code = text;
         }
     }
+
 }
 
 export default () => {

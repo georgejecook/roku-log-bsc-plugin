@@ -10,7 +10,7 @@ let _stagingFolderPath = s`${tmpPath}/staging`;
 import undent from 'undent';
 import { RokuLogPlugin } from './plugin';
 
-describe('RooibosPlugin', () => {
+describe('Roku Log Plugin', () => {
     let program: Program;
     let builder: ProgramBuilder;
     let plugin: RokuLogPlugin;
@@ -85,60 +85,59 @@ describe('RooibosPlugin', () => {
             `);
             program.validate();
             await builder.transpile();
-
             expect(
                 getContents('test.spec.brs')
             ).to.equal(undent`
-                function f1()
+            function f1()
+
+
+
+
+
+            end function
+            function ns1()
+
+
+
+
+
+            end function
+            function __c1_builder()
+                instance = {}
+                instance.new = sub()
+                end sub
+                instance.cm = function()
 
 
 
 
 
                 end function
-                function ns_ns1()
+                return instance
+            end function
+            function c1()
+                instance = __c1_builder()
+                instance.new()
+                return instance
+            end function
+            function __c2_builder()
+                instance = {}
+                instance.new = sub()
+                end sub
+                instance.cm = function()
 
 
 
 
 
                 end function
-                function __ns_c1_builder()
-                    instance = {}
-                    instance.new = sub()
-                    end sub
-                    instance.cm = function()
-
-
-
-
-
-                    end function
-                    return instance
-                end function
-                function ns_c1()
-                    instance = __ns_c1_builder()
-                    instance.new()
-                    return instance
-                end function
-                function __c2_builder()
-                    instance = {}
-                    instance.new = sub()
-                    end sub
-                    instance.cm = function()
-
-
-
-
-
-                    end function
-                    return instance
-                end function
-                function c2()
-                    instance = __c2_builder()
-                    instance.new()
-                    return instance
-                end function
+                return instance
+            end function
+            function c2()
+                instance = __c2_builder()
+                instance.new()
+                return instance
+            end function
             `);
         });
 
@@ -191,57 +190,57 @@ describe('RooibosPlugin', () => {
                 getContents('test.spec.brs')
             ).to.equal(
                 undent`
-                    function f1()
-                        m.log.info("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:3", "i")
-                        m.log.warn("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:4", "w")
-                        m.log.error("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:5", "e")
-                        m.log.verbose("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:6", "v")
-                        m.log.method("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:7", "v")
-                    end function
-                    function ns_ns1()
-                        m.log.info("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:12", "i")
-                        m.log.warn("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:13", "w")
-                        m.log.error("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:14", "e")
-                        m.log.verbose("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:15", "v")
-                        m.log.method("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:16", "v")
-                    end function
-                    function __ns_c1_builder()
-                        instance = {}
-                        instance.new = sub()
-                        end sub
-                        instance.cm = function()
-                            m.log.info("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:20", "i")
-                            m.log.warn("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:21", "w")
-                            m.log.error("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:22", "e")
-                            m.log.verbose("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:23", "v")
-                            m.log.method("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:24", "v")
-                        end function
-                        return instance
-                    end function
-                    function ns_c1()
-                        instance = __ns_c1_builder()
-                        instance.new()
-                        return instance
-                    end function
-                    function __c2_builder()
-                        instance = {}
-                        instance.new = sub()
-                        end sub
-                        instance.cm = function()
-                            m.log.info("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:30", "i")
-                            m.log.warn("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:31", "w")
-                            m.log.error("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:32", "e")
-                            m.log.verbose("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:33", "v")
-                            m.log.method("file" + ":///${tmpDir}/rootDir/source/test.spec.bs:34", "v")
-                        end function
-                        return instance
-                    end function
-                    function c2()
-                        instance = __c2_builder()
-                        instance.new()
-                        return instance
-                    end function
-                `
+function f1()
+    m.log.info("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:3", "i")
+    m.log.warn("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:4", "w")
+    m.log.error("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:5", "e")
+    m.log.verbose("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:6", "v")
+    m.log.method("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:7", "v")
+end function
+function ns1()
+    m.log.info("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:12", "i")
+    m.log.warn("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:13", "w")
+    m.log.error("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:14", "e")
+    m.log.verbose("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:15", "v")
+    m.log.method("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:16", "v")
+end function
+function __c1_builder()
+    instance = {}
+    instance.new = sub()
+    end sub
+    instance.cm = function()
+        m.log.info("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:20", "i")
+        m.log.warn("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:21", "w")
+        m.log.error("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:22", "e")
+        m.log.verbose("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:23", "v")
+        m.log.method("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:24", "v")
+    end function
+    return instance
+end function
+function c1()
+    instance = __c1_builder()
+    instance.new()
+    return instance
+end function
+function __c2_builder()
+    instance = {}
+    instance.new = sub()
+    end sub
+    instance.cm = function()
+        m.log.info("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:30", "i")
+        m.log.warn("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:31", "w")
+        m.log.error("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:32", "e")
+        m.log.verbose("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:33", "v")
+        m.log.method("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:34", "v")
+    end function
+    return instance
+end function
+function c2()
+    instance = __c2_builder()
+    instance.new()
+    return instance
+end function
+`
             );
         });
 
@@ -301,17 +300,31 @@ describe('RooibosPlugin', () => {
             expect(
                 getContents('test.spec.brs')
             ).to.equal(undent`
+            'test comment here
+            function f1()
                 'test comment here
-                function f1()
-                    'test comment here
-                    m.log.info("i")
-                    m.log.warn("w")
-                    m.log.error("e")
-                    m.log.verbose("v")
-                    m.log.method("v")
-                end function
+                m.log.info("i")
+                m.log.warn("w")
+                m.log.error("e")
+                m.log.verbose("v")
+                m.log.method("v")
+            end function
+            '     test comment here
+            function ns1()
                 '     test comment here
-                function ns_ns1()
+                m.log.info("i")
+                m.log.warn("w")
+                m.log.error("e")
+                m.log.verbose("v")
+                m.log.method("v")
+            end function
+            '     test comment here
+            function __c1_builder()
+                instance = {}
+                instance.new = sub()
+                end sub
+                '     test comment here
+                instance.cm = function()
                     '     test comment here
                     m.log.info("i")
                     m.log.warn("w")
@@ -319,47 +332,33 @@ describe('RooibosPlugin', () => {
                     m.log.verbose("v")
                     m.log.method("v")
                 end function
-                '     test comment here
-                function __ns_c1_builder()
-                    instance = {}
-                    instance.new = sub()
-                    end sub
+                return instance
+            end function
+            function c1()
+                instance = __c1_builder()
+                instance.new()
+                return instance
+            end function
+            function __c2_builder()
+                instance = {}
+                instance.new = sub()
+                end sub
+                instance.cm = function()
+                    m.log.info("i")
+                    m.log.warn("w")
+                    m.log.error("e")
                     '     test comment here
-                    instance.cm = function()
-                        '     test comment here
-                        m.log.info("i")
-                        m.log.warn("w")
-                        m.log.error("e")
-                        m.log.verbose("v")
-                        m.log.method("v")
-                    end function
-                    return instance
+                    '     test comment here
+                    m.log.verbose("v")
+                    m.log.method("v")
                 end function
-                function ns_c1()
-                    instance = __ns_c1_builder()
-                    instance.new()
-                    return instance
-                end function
-                function __c2_builder()
-                    instance = {}
-                    instance.new = sub()
-                    end sub
-                    instance.cm = function()
-                        m.log.info("i")
-                        m.log.warn("w")
-                        m.log.error("e")
-                        '     test comment here
-                        '     test comment here
-                        m.log.verbose("v")
-                        m.log.method("v")
-                    end function
-                    return instance
-                end function
-                function c2()
-                    instance = __c2_builder()
-                    instance.new()
-                    return instance
-                end function
+                return instance
+            end function
+            function c2()
+                instance = __c2_builder()
+                instance.new()
+                return instance
+            end function
             `);
         });
         it('removes comments', async () => {
@@ -418,64 +417,64 @@ describe('RooibosPlugin', () => {
             expect(
                 getContents('test.spec.brs')
             ).to.equal(undent`
-                function f1()
+function f1()
 
-                    m.log.info("i")
-                    m.log.warn("w")
-                    m.log.error("e")
-                    m.log.verbose("v")
-                    m.log.method("v")
-                end function
+    m.log.info("i")
+    m.log.warn("w")
+    m.log.error("e")
+    m.log.verbose("v")
+    m.log.method("v")
+end function
 
-                function ns_ns1()
+function ns1()
 
-                    m.log.info("i")
-                    m.log.warn("w")
-                    m.log.error("e")
-                    m.log.verbose("v")
-                    m.log.method("v")
-                end function
+    m.log.info("i")
+    m.log.warn("w")
+    m.log.error("e")
+    m.log.verbose("v")
+    m.log.method("v")
+end function
 
-                function __ns_c1_builder()
-                    instance = {}
-                    instance.new = sub()
-                    end sub
+function __c1_builder()
+    instance = {}
+    instance.new = sub()
+    end sub
 
-                    instance.cm = function()
+    instance.cm = function()
 
-                        m.log.info("i")
-                        m.log.warn("w")
-                        m.log.error("e")
-                        m.log.verbose("v")
-                        m.log.method("v")
-                    end function
-                    return instance
-                end function
-                function ns_c1()
-                    instance = __ns_c1_builder()
-                    instance.new()
-                    return instance
-                end function
-                function __c2_builder()
-                    instance = {}
-                    instance.new = sub()
-                    end sub
-                    instance.cm = function()
-                        m.log.info("i")
-                        m.log.warn("w")
-                        m.log.error("e")
+        m.log.info("i")
+        m.log.warn("w")
+        m.log.error("e")
+        m.log.verbose("v")
+        m.log.method("v")
+    end function
+    return instance
+end function
+function c1()
+    instance = __c1_builder()
+    instance.new()
+    return instance
+end function
+function __c2_builder()
+    instance = {}
+    instance.new = sub()
+    end sub
+    instance.cm = function()
+        m.log.info("i")
+        m.log.warn("w")
+        m.log.error("e")
 
 
-                        m.log.verbose("v")
-                        m.log.method("v")
-                    end function
-                    return instance
-                end function
-                function c2()
-                    instance = __c2_builder()
-                    instance.new()
-                    return instance
-                end function
+        m.log.verbose("v")
+        m.log.method("v")
+    end function
+    return instance
+end function
+function c2()
+    instance = __c2_builder()
+    instance.new()
+    return instance
+end function
             `);
         });
         it('removes comments and strips', async () => {
@@ -534,7 +533,30 @@ describe('RooibosPlugin', () => {
             expect(
                 getContents('test.spec.brs')
             ).to.equal(undent`
-                function f1()
+            function f1()
+
+
+
+
+
+
+            end function
+
+            function ns1()
+
+
+
+
+
+
+            end function
+
+            function __c1_builder()
+                instance = {}
+                instance.new = sub()
+                end sub
+
+                instance.cm = function()
 
 
 
@@ -542,8 +564,19 @@ describe('RooibosPlugin', () => {
 
 
                 end function
+                return instance
+            end function
+            function c1()
+                instance = __c1_builder()
+                instance.new()
+                return instance
+            end function
+            function __c2_builder()
+                instance = {}
+                instance.new = sub()
+                end sub
+                instance.cm = function()
 
-                function ns_ns1()
 
 
 
@@ -551,48 +584,14 @@ describe('RooibosPlugin', () => {
 
 
                 end function
-
-                function __ns_c1_builder()
-                    instance = {}
-                    instance.new = sub()
-                    end sub
-
-                    instance.cm = function()
-
-
-
-
-
-
-                    end function
-                    return instance
-                end function
-                function ns_c1()
-                    instance = __ns_c1_builder()
-                    instance.new()
-                    return instance
-                end function
-                function __c2_builder()
-                    instance = {}
-                    instance.new = sub()
-                    end sub
-                    instance.cm = function()
-
-
-
-
-
-
-
-                    end function
-                    return instance
-                end function
-                function c2()
-                    instance = __c2_builder()
-                    instance.new()
-                    return instance
-                end function
-            `);
+                return instance
+            end function
+            function c2()
+                instance = __c2_builder()
+                instance.new()
+                return instance
+            end function
+                        `);
         });
     });
 });
