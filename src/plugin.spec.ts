@@ -87,58 +87,56 @@ describe('Roku Log Plugin', () => {
             await builder.transpile();
             expect(
                 getContents('test.spec.brs')
-            ).to.equal(undent`
-            function f1()
+            ).to.equal(`function f1()
 
 
 
 
 
-            end function
-            function ns1()
+end function
+function ns_ns1()
 
 
 
 
 
-            end function
-            function __c1_builder()
-                instance = {}
-                instance.new = sub()
-                end sub
-                instance.cm = function()
+end function
+function __ns_c1_builder()
+    instance = {}
+    instance.new = sub()
+    end sub
+    instance.cm = function()
 
 
 
 
 
-                end function
-                return instance
-            end function
-            function c1()
-                instance = __c1_builder()
-                instance.new()
-                return instance
-            end function
-            function __c2_builder()
-                instance = {}
-                instance.new = sub()
-                end sub
-                instance.cm = function()
+    end function
+    return instance
+end function
+function ns_c1()
+    instance = __ns_c1_builder()
+    instance.new()
+    return instance
+end function
+function __c2_builder()
+    instance = {}
+    instance.new = sub()
+    end sub
+    instance.cm = function()
 
 
 
 
 
-                end function
-                return instance
-            end function
-            function c2()
-                instance = __c2_builder()
-                instance.new()
-                return instance
-            end function
-            `);
+    end function
+    return instance
+end function
+function c2()
+    instance = __c2_builder()
+    instance.new()
+    return instance
+end function`);
         });
 
         it('updates log lines', async () => {
@@ -197,14 +195,14 @@ function f1()
     m.log.verbose("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:6", "v")
     m.log.method("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:7", "v")
 end function
-function ns1()
+function ns_ns1()
     m.log.info("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:12", "i")
     m.log.warn("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:13", "w")
     m.log.error("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:14", "e")
     m.log.verbose("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:15", "v")
     m.log.method("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:16", "v")
 end function
-function __c1_builder()
+function __ns_c1_builder()
     instance = {}
     instance.new = sub()
     end sub
@@ -217,8 +215,8 @@ function __c1_builder()
     end function
     return instance
 end function
-function c1()
-    instance = __c1_builder()
+function ns_c1()
+    instance = __ns_c1_builder()
     instance.new()
     return instance
 end function
@@ -239,9 +237,7 @@ function c2()
     instance = __c2_builder()
     instance.new()
     return instance
-end function
-`
-            );
+end function`);
         });
 
         it('leaves comments', async () => {
@@ -300,66 +296,65 @@ end function
             expect(
                 getContents('test.spec.brs')
             ).to.equal(undent`
-            'test comment here
-            function f1()
-                'test comment here
-                m.log.info("i")
-                m.log.warn("w")
-                m.log.error("e")
-                m.log.verbose("v")
-                m.log.method("v")
-            end function
-            '     test comment here
-            function ns1()
-                '     test comment here
-                m.log.info("i")
-                m.log.warn("w")
-                m.log.error("e")
-                m.log.verbose("v")
-                m.log.method("v")
-            end function
-            '     test comment here
-            function __c1_builder()
-                instance = {}
-                instance.new = sub()
-                end sub
-                '     test comment here
-                instance.cm = function()
-                    '     test comment here
-                    m.log.info("i")
-                    m.log.warn("w")
-                    m.log.error("e")
-                    m.log.verbose("v")
-                    m.log.method("v")
-                end function
-                return instance
-            end function
-            function c1()
-                instance = __c1_builder()
-                instance.new()
-                return instance
-            end function
-            function __c2_builder()
-                instance = {}
-                instance.new = sub()
-                end sub
-                instance.cm = function()
-                    m.log.info("i")
-                    m.log.warn("w")
-                    m.log.error("e")
-                    '     test comment here
-                    '     test comment here
-                    m.log.verbose("v")
-                    m.log.method("v")
-                end function
-                return instance
-            end function
-            function c2()
-                instance = __c2_builder()
-                instance.new()
-                return instance
-            end function
-            `);
+'test comment here
+function f1()
+    'test comment here
+    m.log.info("i")
+    m.log.warn("w")
+    m.log.error("e")
+    m.log.verbose("v")
+    m.log.method("v")
+end function
+'     test comment here
+function ns_ns1()
+    '     test comment here
+    m.log.info("i")
+    m.log.warn("w")
+    m.log.error("e")
+    m.log.verbose("v")
+    m.log.method("v")
+end function
+'     test comment here
+function __ns_c1_builder()
+    instance = {}
+    instance.new = sub()
+    end sub
+    '     test comment here
+    instance.cm = function()
+        '     test comment here
+        m.log.info("i")
+        m.log.warn("w")
+        m.log.error("e")
+        m.log.verbose("v")
+        m.log.method("v")
+    end function
+    return instance
+end function
+function ns_c1()
+    instance = __ns_c1_builder()
+    instance.new()
+    return instance
+end function
+function __c2_builder()
+    instance = {}
+    instance.new = sub()
+    end sub
+    instance.cm = function()
+        m.log.info("i")
+        m.log.warn("w")
+        m.log.error("e")
+        '     test comment here
+        '     test comment here
+        m.log.verbose("v")
+        m.log.method("v")
+    end function
+    return instance
+end function
+function c2()
+    instance = __c2_builder()
+    instance.new()
+    return instance
+end function`);
         });
         it('removes comments', async () => {
             program.setFile('source/test.spec.bs', `
@@ -426,7 +421,7 @@ function f1()
     m.log.method("v")
 end function
 
-function ns1()
+function ns_ns1()
 
     m.log.info("i")
     m.log.warn("w")
@@ -435,7 +430,7 @@ function ns1()
     m.log.method("v")
 end function
 
-function __c1_builder()
+function __ns_c1_builder()
     instance = {}
     instance.new = sub()
     end sub
@@ -450,8 +445,8 @@ function __c1_builder()
     end function
     return instance
 end function
-function c1()
-    instance = __c1_builder()
+function ns_c1()
+    instance = __ns_c1_builder()
     instance.new()
     return instance
 end function
@@ -474,8 +469,7 @@ function c2()
     instance = __c2_builder()
     instance.new()
     return instance
-end function
-            `);
+end function`);
         });
         it('removes comments and strips', async () => {
             program.setFile('source/test.spec.bs', `
@@ -533,49 +527,49 @@ end function
             expect(
                 getContents('test.spec.brs')
             ).to.equal(undent`
-            function f1()
+function f1()
 
 
 
 
 
 
-            end function
+end function
 
-            function ns1()
-
-
-
-
-
-
-            end function
-
-            function __c1_builder()
-                instance = {}
-                instance.new = sub()
-                end sub
-
-                instance.cm = function()
+function ns_ns1()
 
 
 
 
 
 
-                end function
-                return instance
-            end function
-            function c1()
-                instance = __c1_builder()
-                instance.new()
-                return instance
-            end function
-            function __c2_builder()
-                instance = {}
-                instance.new = sub()
-                end sub
-                instance.cm = function()
+end function
+
+function __ns_c1_builder()
+    instance = {}
+    instance.new = sub()
+    end sub
+
+    instance.cm = function()
+
+
+
+
+
+
+    end function
+    return instance
+end function
+function ns_c1()
+    instance = __ns_c1_builder()
+    instance.new()
+    return instance
+end function
+function __c2_builder()
+    instance = {}
+    instance.new = sub()
+    end sub
+    instance.cm = function()
 
 
 
@@ -583,15 +577,15 @@ end function
 
 
 
-                end function
-                return instance
-            end function
-            function c2()
-                instance = __c2_builder()
-                instance.new()
-                return instance
-            end function
-                        `);
+    end function
+    return instance
+end function
+function c2()
+    instance = __c2_builder()
+    instance.new()
+    return instance
+end function
+`);
         });
     });
 });
