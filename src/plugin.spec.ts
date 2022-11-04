@@ -185,7 +185,7 @@ end function`);
             const tmpDir = tmpPath.replace(/^\//, '');
 
             expect(
-                getContents('test.spec.brs')
+                getContents('test.spec.brs').replace(/\/\/\/(.*)\/rootDir/gim, '')
             ).to.equal(
                 undent`
 function f1()
@@ -237,7 +237,7 @@ function c2()
     instance = __c2_builder()
     instance.new()
     return instance
-end function`);
+end function`.replace(/\/\/\/(.*)\/rootDir/gim, ''));
         });
 
         it('leaves comments', async () => {
