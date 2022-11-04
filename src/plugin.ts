@@ -1,6 +1,6 @@
-import { AfterFileTranspileEvent, BeforeFileTranspileEvent, Block, CompilerPlugin, Expression, IfStatement, Program, ProgramBuilder, Statement, TranspileObj } from 'brighterscript';
+import type { AfterFileTranspileEvent, BeforeFileTranspileEvent, CompilerPlugin, Program, ProgramBuilder, TranspileObj } from 'brighterscript';
 
-import { Range, isDottedGetExpression, isVariableExpression, createToken, createVisitor, EmptyStatement, isBrsFile, SourceLiteralExpression, TokenKind, WalkMode } from 'brighterscript';
+import { isDottedGetExpression, isVariableExpression, createToken, createVisitor, isBrsFile, SourceLiteralExpression, TokenKind, WalkMode } from 'brighterscript';
 import { BrsTranspileState } from 'brighterscript/dist/parser/BrsTranspileState';
 
 import * as fs from 'fs-extra';
