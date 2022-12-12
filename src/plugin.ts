@@ -45,12 +45,15 @@ export class RokuLogPlugin implements CompilerPlugin {
                                     event.editor.overrideTranspileResult(callExpression, '');
                                 } else {
                                     if (this.rokuLogConfig.insertPkgPath) {
-                                        const t = createToken(TokenKind.SourceLocationLiteral, '', callExpression.range);
-                                        let sourceExpression = new SourceLiteralExpression(t);
-                                        if (callExpression.args.length > 0) {
-                                            event.editor.addToArray(callExpression.args, 0, sourceExpression);
-                                        } else {
-                                            event.editor.addToArray(callExpression.args, callExpression.args.length, sourceExpression);
+                                        let funcName = callExpression.callee.name.text;
+                                        if (funcName === 'info' || funcName === 'verbose' || funcName === 'error' || funcName === 'warn' || funcName === 'debug' || funcName === 'method') {
+                                            const t = createToken(TokenKind.SourceLocationLiteral, '', callExpression.range);
+                                            let sourceExpression = new SourceLiteralExpression(t);
+                                            if (callExpression.args.length > 0) {
+                                                event.editor.addToArray(callExpression.args, 0, sourceExpression);
+                                            } else {
+                                                event.editor.addToArray(callExpression.args, callExpression.args.length, sourceExpression);
+                                            }
                                         }
                                         visitedLineNumbers[`${callExpression.range.start.line}`] = true;
                                     }
