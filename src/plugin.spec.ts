@@ -147,6 +147,9 @@ end function`);
                     m.log.error("e")
                     m.log.verbose("v")
                     m.log.method("v")
+                    m.log.increaseIndent()
+                    m.log.decreaseIndent()
+                    m.log.resetIndent()
                 end function
 
                 namespace ns
@@ -156,6 +159,9 @@ end function`);
                         m.log.error("e")
                         m.log.verbose("v")
                         m.log.method("v")
+                        m.log.increaseIndent()
+                        m.log.decreaseIndent()
+                        m.log.resetIndent()
                     end function
                     class c1
                         function cm()
@@ -164,6 +170,9 @@ end function`);
                             m.log.error("e")
                             m.log.verbose("v")
                             m.log.method("v")
+                            m.log.increaseIndent()
+                            m.log.decreaseIndent()
+                            m.log.resetIndent()
                         end function
                     end class
                 end namespace
@@ -174,6 +183,9 @@ end function`);
                         m.log.error("e")
                         m.log.verbose("v")
                         m.log.method("v")
+                        m.log.increaseIndent()
+                        m.log.decreaseIndent()
+                        m.log.resetIndent()
                     end function
                 end class
             `);
@@ -183,35 +195,43 @@ end function`);
             await builder.transpile();
             //linux tests end up with too many slashes, so remove one to make the test happy
             const tmpDir = tmpPath.replace(/^\//, '');
-
             expect(
                 getContents('test.spec.brs').replace(/\/\/\/(.*)\/rootDir/gim, '')
             ).to.equal(
                 undent`
 function f1()
-    m.log.info("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:3", "i")
-    m.log.warn("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:4", "w")
-    m.log.error("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:5", "e")
-    m.log.verbose("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:6", "v")
-    m.log.method("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:7", "v")
+    m.log.info("file" + ":/source/test.spec.bs:3", "i")
+    m.log.warn("file" + ":/source/test.spec.bs:4", "w")
+    m.log.error("file" + ":/source/test.spec.bs:5", "e")
+    m.log.verbose("file" + ":/source/test.spec.bs:6", "v")
+    m.log.method("file" + ":/source/test.spec.bs:7", "v")
+    m.log.increaseIndent()
+    m.log.decreaseIndent()
+    m.log.resetIndent()
 end function
 function ns_ns1()
-    m.log.info("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:12", "i")
-    m.log.warn("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:13", "w")
-    m.log.error("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:14", "e")
-    m.log.verbose("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:15", "v")
-    m.log.method("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:16", "v")
+    m.log.info("file" + ":/source/test.spec.bs:15", "i")
+    m.log.warn("file" + ":/source/test.spec.bs:16", "w")
+    m.log.error("file" + ":/source/test.spec.bs:17", "e")
+    m.log.verbose("file" + ":/source/test.spec.bs:18", "v")
+    m.log.method("file" + ":/source/test.spec.bs:19", "v")
+    m.log.increaseIndent()
+    m.log.decreaseIndent()
+    m.log.resetIndent()
 end function
 function __ns_c1_builder()
     instance = {}
     instance.new = sub()
     end sub
     instance.cm = function()
-        m.log.info("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:20", "i")
-        m.log.warn("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:21", "w")
-        m.log.error("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:22", "e")
-        m.log.verbose("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:23", "v")
-        m.log.method("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:24", "v")
+        m.log.info("file" + ":/source/test.spec.bs:26", "i")
+        m.log.warn("file" + ":/source/test.spec.bs:27", "w")
+        m.log.error("file" + ":/source/test.spec.bs:28", "e")
+        m.log.verbose("file" + ":/source/test.spec.bs:29", "v")
+        m.log.method("file" + ":/source/test.spec.bs:30", "v")
+        m.log.increaseIndent()
+        m.log.decreaseIndent()
+        m.log.resetIndent()
     end function
     return instance
 end function
@@ -225,11 +245,14 @@ function __c2_builder()
     instance.new = sub()
     end sub
     instance.cm = function()
-        m.log.info("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:30", "i")
-        m.log.warn("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:31", "w")
-        m.log.error("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:32", "e")
-        m.log.verbose("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:33", "v")
-        m.log.method("file" + ":///home/georgejecook/hope/open-source/maestro/roku-log-bsc-plugin/.tmp/test/rootDir/source/test.spec.bs:34", "v")
+        m.log.info("file" + ":/source/test.spec.bs:39", "i")
+        m.log.warn("file" + ":/source/test.spec.bs:40", "w")
+        m.log.error("file" + ":/source/test.spec.bs:41", "e")
+        m.log.verbose("file" + ":/source/test.spec.bs:42", "v")
+        m.log.method("file" + ":/source/test.spec.bs:43", "v")
+        m.log.increaseIndent()
+        m.log.decreaseIndent()
+        m.log.resetIndent()
     end function
     return instance
 end function
