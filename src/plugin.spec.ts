@@ -32,8 +32,8 @@ describe('Roku Log Plugin', () => {
         builder.program = new Program(builder.options);
         program = builder.program;
         program.logger = builder.logger;
-        builder.plugins = new PluginInterface([plugin], builder.logger);
-        program.plugins = new PluginInterface([plugin], builder.logger);
+        builder.plugins = new PluginInterface([plugin], { logger: builder.logger });
+        program.plugins = builder.plugins;
         program.createSourceScope(); //ensure source scope is created
         plugin.beforeProgramCreate(builder);
     });
