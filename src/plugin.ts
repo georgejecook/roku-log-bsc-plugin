@@ -1,11 +1,7 @@
 import type { AfterFileTranspileEvent, BeforeFileTranspileEvent, CompilerPlugin, Program, ProgramBuilder, TranspileObj } from 'brighterscript';
-
 import { isDottedGetExpression, isVariableExpression, createToken, createVisitor, isBrsFile, SourceLiteralExpression, TokenKind, WalkMode } from 'brighterscript';
 import { BrsTranspileState } from 'brighterscript/dist/parser/BrsTranspileState';
-
-import * as fs from 'fs-extra';
 import { RawCodeStatement } from './RawCodeStatement';
-
 
 export class RokuLogPlugin implements CompilerPlugin {
     public name = 'log-plugin';
@@ -23,7 +19,8 @@ export class RokuLogPlugin implements CompilerPlugin {
     beforeProgramTranspile(program: Program, entries: TranspileObj[]) {
         for (let filePath in program.files) {
             let file = program.files[filePath];
-            file.needsTranspiled = true;
+            //this isn't necessary in the file api, but keep here for legacy bsc versions
+            (file as any).needsTranspiled = true;
         }
     }
 
