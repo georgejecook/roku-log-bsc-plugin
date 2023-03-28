@@ -1,6 +1,5 @@
 # Getting started
-
-[![build](https://img.shields.io/github/workflow/status/georgejecook/roku-log-bsc-plugin/build.svg?logo=github)](https://github.com/georgejecook/roku-log-bsc-plugin/actions?query=workflow%3Abuild)
+[![build](https://img.shields.io/github/actions/workflow/status/georgejecook/roku-log-bsc-plugin/build.yml?branch=master)](https://github.com/georgejecook/roku-log-bsc-plugin/actions/workflows/build.yml)
 [![GitHub](https://img.shields.io/github/release/georgejecook/roku-log-bsc-plugin.svg?style=flat-square)](https://github.com/georgejecook/roku-log-bsc-plugin/releases)
 [![NPM Version](https://badge.fury.io/js/roku-log-bsc-plugin.svg?style=flat)](https://npmjs.org/package/roku-log-bsc-plugin)
 
