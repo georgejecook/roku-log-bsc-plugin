@@ -610,6 +610,284 @@ function c2()
 end function
 `);
         });
+
+        it('sets m.__le value when guarding is active', async () => {
+            program.setFile('source/test.spec.bs', `
+                'mock logger
+                namespace log
+                    class Logger
+                        function new(name as string)
+                        end function
+                    end class
+                end namespace
+
+                'comp scope
+                function f1()
+                    'test comment here
+                    m.log = new log.Logger("TestComp")
+                    m.log.info("v")
+                end function
+
+                'class scope
+                namespace ns
+                    class TestClass
+                    function f1()
+                        m.log = new log.Logger("TestClass")
+                        m.log.info("v")
+                    end function
+                    end class
+                end namespace
+            `);
+            program.validate();
+            plugin.rokuLogConfig.strip = false;
+            plugin.rokuLogConfig.guard = true;
+            plugin.rokuLogConfig.insertPkgPath = false;
+            plugin.rokuLogConfig.removeComments = true;
+            await builder.transpile();
+            expect(
+                getContents('test.spec.brs')
+            ).to.equal(undent`
+            function __log_Logger_builder()
+                instance = {}
+                instance.new = function(name as string)
+                end function
+                return instance
+            end function
+            function log_Logger(name as string)
+                instance = __log_Logger_builder()
+                instance.new(name)
+                return instance
+            end function
+
+
+            function f1()
+
+                m.log = log_Logger("TestComp")
+                m.__le = m.log.enabled
+                if m.__le = true
+                    m.log.info("v")
+                end if
+            end function
+
+            function __ns_TestClass_builder()
+                instance = {}
+                instance.new = sub()
+                end sub
+                instance.f1 = function()
+                    m.log = log_Logger("TestClass")
+                    m.__le = m.log.enabled
+                    if m.__le = true
+                        if m.__le = true
+                            if m.__le = true
+                                m.log.info("v")
+                            end if
+                        end if
+                    end if
+                end function
+                return instance
+            end function
+            function ns_TestClass()
+                instance = __ns_TestClass_builder()
+                instance.new()
+                return instance
+            end function`);
+        });
+
+        it('guards log calls', async () => {
+            program.setFile('source/test.spec.bs', `
+                'test comment here
+                function f1()
+                    'test comment here
+                    m.log.info("i")
+                    m.log.warn("w")
+                    m.log.error("e")
+                    m.log.verbose("v")
+                    m.log.method("v")
+                end function
+
+                '     test comment here
+                namespace ns
+                    function ns1()
+                        '     test comment here
+                        m.log.info("i")
+                        m.log.warn("w")
+                        m.log.error("e")
+                        m.log.verbose("v")
+                        m.log.method("v")
+                    end function
+                    '     test comment here
+                    class c1
+                        '     test comment here
+                        function cm()
+                            '     test comment here
+                            m.log.info("i")
+                            m.log.warn("w")
+                            m.log.error("e")
+                            m.log.verbose("v")
+                            m.log.method("v")
+                        end function
+                    end class
+                end namespace
+                class c2
+                    function cm()
+                        m.log.info("i")
+                        m.log.warn("w")
+                        m.log.error("e")
+                        '     test comment here
+                        '     test comment here
+                        m.log.verbose("v")
+                        m.log.method("v")
+                    end function
+                end class
+            `);
+            program.validate();
+            plugin.rokuLogConfig.strip = false;
+            plugin.rokuLogConfig.guard = true;
+            plugin.rokuLogConfig.insertPkgPath = false;
+            plugin.rokuLogConfig.removeComments = true;
+            await builder.transpile();
+            expect(
+                getContents('test.spec.brs')
+            ).to.equal(undent`
+            function f1()
+
+                if m.__le = true
+                    m.log.info("i")
+                end if
+                if m.__le = true
+                    m.log.warn("w")
+                end if
+                if m.__le = true
+                    m.log.error("e")
+                end if
+                if m.__le = true
+                    m.log.verbose("v")
+                end if
+                if m.__le = true
+                    m.log.method("v")
+                end if
+            end function
+
+            function ns_ns1()
+
+                if m.__le = true
+                    if m.__le = true
+                        m.log.info("i")
+                    end if
+                end if
+                if m.__le = true
+                    if m.__le = true
+                        m.log.warn("w")
+                    end if
+                end if
+                if m.__le = true
+                    if m.__le = true
+                        m.log.error("e")
+                    end if
+                end if
+                if m.__le = true
+                    if m.__le = true
+                        m.log.verbose("v")
+                    end if
+                end if
+                if m.__le = true
+                    if m.__le = true
+                        m.log.method("v")
+                    end if
+                end if
+            end function
+
+            function __ns_c1_builder()
+                instance = {}
+                instance.new = sub()
+                end sub
+
+                instance.cm = function()
+
+                    if m.__le = true
+                        if m.__le = true
+                            if m.__le = true
+                                m.log.info("i")
+                            end if
+                        end if
+                    end if
+                    if m.__le = true
+                        if m.__le = true
+                            if m.__le = true
+                                m.log.warn("w")
+                            end if
+                        end if
+                    end if
+                    if m.__le = true
+                        if m.__le = true
+                            if m.__le = true
+                                m.log.error("e")
+                            end if
+                        end if
+                    end if
+                    if m.__le = true
+                        if m.__le = true
+                            if m.__le = true
+                                m.log.verbose("v")
+                            end if
+                        end if
+                    end if
+                    if m.__le = true
+                        if m.__le = true
+                            if m.__le = true
+                                m.log.method("v")
+                            end if
+                        end if
+                    end if
+                end function
+                return instance
+            end function
+            function ns_c1()
+                instance = __ns_c1_builder()
+                instance.new()
+                return instance
+            end function
+            function __c2_builder()
+                instance = {}
+                instance.new = sub()
+                end sub
+                instance.cm = function()
+                    if m.__le = true
+                        if m.__le = true
+                            m.log.info("i")
+                        end if
+                    end if
+                    if m.__le = true
+                        if m.__le = true
+                            m.log.warn("w")
+                        end if
+                    end if
+                    if m.__le = true
+                        if m.__le = true
+                            m.log.error("e")
+                        end if
+                    end if
+
+
+                    if m.__le = true
+                        if m.__le = true
+                            m.log.verbose("v")
+                        end if
+                    end if
+                    if m.__le = true
+                        if m.__le = true
+                            m.log.method("v")
+                        end if
+                    end if
+                end function
+                return instance
+            end function
+            function c2()
+                instance = __c2_builder()
+                instance.new()
+                return instance
+            end function`);
+        });
     });
 });
 
