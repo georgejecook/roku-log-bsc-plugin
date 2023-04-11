@@ -3,11 +3,8 @@ import { DottedSetStatement, BinaryExpression, createIdentifier, createStringLit
 
 import * as brighterscript from 'brighterscript';
 import { BrsTranspileState } from 'brighterscript/dist/parser/BrsTranspileState';
-
-import * as fs from 'fs-extra';
 import { RawCodeStatement } from './RawCodeStatement';
 import { createIfStatement } from './utils/Utils';
-
 
 export class RokuLogPlugin implements CompilerPlugin {
     public name = 'log-plugin';
@@ -25,7 +22,8 @@ export class RokuLogPlugin implements CompilerPlugin {
     beforeProgramTranspile(program: Program, entries: TranspileObj[]) {
         for (let filePath in program.files) {
             let file = program.files[filePath];
-            file.needsTranspiled = true;
+            //this isn't necessary in the file api, but keep here for legacy bsc versions
+            (file as any).needsTranspiled = true;
         }
     }
 
