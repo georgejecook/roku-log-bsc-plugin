@@ -10,9 +10,7 @@
         "test": "test"
     },
     "dependencies": {
-        "@rokucommunity/bslib": "^0.1.1",
         "@types/node": "^16.18.10",
-        "bslib": "npm:@rokucommunity/bslib@^0.1.1",
         "source-map": "^0.7.3",
         "stringify-object": "^3.3.0",
         "vscode-languageserver": "~6.1.1",
