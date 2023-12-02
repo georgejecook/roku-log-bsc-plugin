@@ -1,4 +1,4 @@
-import type { AfterFileTranspileEvent, BeforeFileTranspileEvent, CallExpression, CompilerPlugin, ExpressionStatement, NewExpression, Program, ProgramBuilder, TranspileObj } from 'brighterscript';
+import type { AfterFileTranspileEvent, BeforePrepareFileEvent, CallExpression, CompilerPlugin, ExpressionStatement, NewExpression, Program, TranspileObj } from 'brighterscript';
 import { DottedSetStatement, BinaryExpression, createIdentifier, createStringLiteral, DottedGetExpression, isCallExpression, isExpressionStatement, isNewExpression, LiteralExpression, ParseMode, Range, VariableExpression } from 'brighterscript';
 
 import * as brighterscript from 'brighterscript';
@@ -15,19 +15,19 @@ export class RokuLogPlugin implements CompilerPlugin {
         removeComments: true
     };
 
-    beforeProgramCreate(builder: ProgramBuilder): void {
-        this.rokuLogConfig = { ...this.rokuLogConfig, ...(builder.options as any).rokuLog };
+    beforeBuildProgram(event: brighterscript.BeforeBuildProgramEvent): void {
+        this.rokuLogConfig = { ...this.rokuLogConfig, ...(event.program.options as any).rokuLog };
     }
 
-    beforeProgramTranspile(program: Program, entries: TranspileObj[]) {
-        for (let filePath in program.files) {
-            let file = program.files[filePath];
+    afterPrepareFile(event: brighterscript.AfterPrepareFileEvent) {
+        for (let filePath in event.program.files) {
+            let file = event.program.files[filePath];
             //this isn't necessary in the file api, but keep here for legacy bsc versions
             (file as any).needsTranspiled = true;
         }
     }
 
-    beforeFileTranspile(event: BeforeFileTranspileEvent) {
+    beforePrepareFile(event: BeforePrepareFileEvent) {
         let visitedLineNumbers = {};
         if (brighterscript.isBrsFile(event.file)) {
             const parser = event.file.parser;
@@ -121,15 +121,16 @@ export class RokuLogPlugin implements CompilerPlugin {
         return createIfStatement(binaryExpression, [callExpression.parent as ExpressionStatement]);
     }
 
-    afterFileTranspile(event: AfterFileTranspileEvent) {
-        if (this.rokuLogConfig.removeComments) {
-            let text = event.code;
-            if (event.outputPath.endsWith('.xml')) {
+    afterSerializeFile(event: brighterscript.AfterSerializeFileEvent) {
+        if (this.rokuLogConfig.removeComments && (brighterscript.isBrsFile(event.file) || brighterscript.isXmlFile(event.file))) {
+            let result = event.result.get(event.file)[0];
+            let text = result.data.toString();
+            if (brighterscript.isXmlFile(event.file)) {
                 text = text.replace(/<!(--.*?--)?>/gim, '');
             } else {
                 text = text.replace(/^(?: *|\t*)('[^\n]*)/gim, '');
             }
-            event.code = text;
+            result.data = Buffer.from(text);
         }
     }
 

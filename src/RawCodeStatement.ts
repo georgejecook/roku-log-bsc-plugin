@@ -4,6 +4,7 @@ import type {
     WalkVisitor
 } from 'brighterscript';
 import {
+    AstNodeKind,
     Range,
     Statement
 } from 'brighterscript';
@@ -13,12 +14,14 @@ import { SourceNode } from 'source-map';
 import type { BrsTranspileState } from 'brighterscript/dist/parser/BrsTranspileState';
 
 export class RawCodeStatement extends Statement {
+    kind: AstNodeKind;
     constructor(
         public source: string,
         public sourceFile?: BscFile,
         public range: Range = Range.create(1, 1, 1, 99999)
     ) {
         super();
+        this.kind = AstNodeKind.Block;
     }
 
     public transpile(state: BrsTranspileState) {

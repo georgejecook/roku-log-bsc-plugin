@@ -1,4 +1,4 @@
-import type { ClassStatement, Expression, FunctionStatement, Statement, ClassMethodStatement } from 'brighterscript';
+import type { ClassStatement, Expression, FunctionStatement, MethodStatement, Statement } from 'brighterscript';
 import { createVariableExpression } from 'brighterscript';
 
 // eslint-disable-next-line @typescript-eslint/no-duplicate-imports
@@ -69,7 +69,7 @@ export function getFunctionBody(source: string): Statement[] {
     return funcStatement ? funcStatement.func.body.statements : [];
 }
 
-export function changeFunctionBody(statement: ClassMethodStatement | FunctionStatement, source: Statement[] | string) {
+export function changeFunctionBody(statement: FunctionStatement | MethodStatement, source: Statement[] | string) {
     let statements = statement.func.body.statements;
     statements.splice(0, statements.length);
     let newStatements = (typeof source === 'string') ? getFunctionBody(source) : source;
@@ -80,7 +80,7 @@ export function changeFunctionBody(statement: ClassMethodStatement | FunctionSta
 
 export function changeClassMethodBody(target: ClassStatement, name: string, source: Statement[] | string): boolean {
     let method = target.methods.find((m) => m.name.text === name);
-    if (brighterscript.isClassMethodStatement(method)) {
+    if (brighterscript.isMethodStatement(method)) {
         changeFunctionBody(method, source);
         return true;
     }

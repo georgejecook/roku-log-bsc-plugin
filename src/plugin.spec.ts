@@ -7,12 +7,22 @@ import * as fsExtra from 'fs-extra';
 let tmpPath = s`${process.cwd()}/.tmp/test`.replace(/\\/g, '/');
 let _rootDir = s`${tmpPath}/rootDir`;
 let _stagingFolderPath = s`${tmpPath}/staging`;
-import undent from 'undent';
 import { RokuLogPlugin } from './plugin';
 
 const tmpDir = s`${process.cwd()}/.tmp/test`.replace(/\\/g, '/');
 const rootDir = s`${tmpDir}/rootDir`;
 const stagingDir = s`${tmpDir}/staging`;
+
+function undent(strings: TemplateStringsArray | string, ...values: any[]): string {
+    // Construct the full string by interleaving the strings and values
+    let fullString = '';
+    for (let i = 0; i < strings.length; i++) {
+        fullString += strings[i] + (values[i] || '').trim();
+    }
+
+    // Split into lines, trim leading whitespace, and rejoin
+    return fullString.split('\n').map(line => line.trim()).join('\n').trim();
+}
 
 describe('Roku Log Plugin', () => {
     let program: Program;
@@ -33,14 +43,22 @@ describe('Roku Log Plugin', () => {
         program = builder.program;
         program.logger = builder.logger;
         program.createSourceScope(); //ensure source scope is created
-        plugin.beforeProgramCreate(builder);
+        const event = {
+            program: builder.program,
+            files: [],
+            editor: null
+        };
+        plugin.beforeBuildProgram(event);
     });
 
     options = util.normalizeAndResolveConfig({
         rootDir: rootDir,
         stagingDir: stagingDir,
         createPackage: false,
-        retainStagingDir: true
+        retainStagingDir: true,
+        diagnosticFilters: [1001]
+
+
     });
     afterEach(() => {
         fsExtra.emptyDirSync(tmpPath);
@@ -57,23 +75,9 @@ describe('Roku Log Plugin', () => {
     describe('basic tests', () => {
         it('strips logs', async () => {
             fsExtra.outputFileSync(`${rootDir}/source/test.spec.bs`, undent`
-                function f1()
-                    m.log.info("i")
-                    m.log.warn("w")
-                    m.log.error("e")
-                    m.log.verbose("v")
-                    m.log.method("v")
-                end function
-
                 namespace ns
-                    function ns1()
-                        m.log.info("i")
-                        m.log.warn("w")
-                        m.log.error("e")
-                        m.log.verbose("v")
-                        m.log.method("v")
-                    end function
                     class c1
+                        private log
                         function cm()
                             m.log.info("i")
                             m.log.warn("w")
@@ -84,6 +88,7 @@ describe('Roku Log Plugin', () => {
                 end class
                 end namespace
                 class c2
+                    private log
                     function cm()
                         m.log.info("i")
                         m.log.warn("w")
@@ -96,57 +101,47 @@ describe('Roku Log Plugin', () => {
 
             await builder.run(options);
 
-            expectFileEquals('test.spec.brs', undent`
-                function f1()
+            expect(builder.getDiagnostics().length).to.equal(0);
+
+            expectFileEquals('test.spec.brs', `
+            function __ns_c1_builder()
+                instance = {}
+                instance.new = sub()
+                    m.log = invalid
+                end sub
+                instance.cm = function()
 
 
 
 
 
                 end function
-                function ns_ns1()
+                return instance
+            end function
+            function ns_c1()
+                instance = __ns_c1_builder()
+                instance.new()
+                return instance
+            end function
+            function __c2_builder()
+                instance = {}
+                instance.new = sub()
+                    m.log = invalid
+                end sub
+                instance.cm = function()
 
 
 
 
 
                 end function
-                function __ns_c1_builder()
-                    instance = {}
-                    instance.new = sub()
-                    end sub
-                    instance.cm = function()
-
-
-
-
-
-                    end function
-                    return instance
-                end function
-                function ns_c1()
-                    instance = __ns_c1_builder()
-                    instance.new()
-                    return instance
-                end function
-                function __c2_builder()
-                    instance = {}
-                    instance.new = sub()
-                    end sub
-                    instance.cm = function()
-
-
-
-
-
-                    end function
-                    return instance
-                end function
-                function c2()
-                    instance = __c2_builder()
-                    instance.new()
-                    return instance
-                end function
+                return instance
+            end function
+            function c2()
+                instance = __c2_builder()
+                instance.new()
+                return instance
+            end function
             `);
         });
 
@@ -203,9 +198,11 @@ describe('Roku Log Plugin', () => {
             plugin.rokuLogConfig.strip = false;
             plugin.rokuLogConfig.insertPkgPath = true;
             await builder.run(options);
+
+            expect(builder.getDiagnostics().length).to.equal(0);
             expect(
                 //linux tests end up with too many slashes, so remove one to make the test happy
-                fsExtra.readFileSync(s`${stagingDir}/source/test.spec.brs`).toString().replace(/\/\/\/(.*)\/rootDir/gim, '')
+                undent(fsExtra.readFileSync(s`${stagingDir}/source/test.spec.brs`).toString().replace(/\/\/\/(.*)\/rootDir/gim, ''))
             ).to.equal(undent`
                 function f1()
                     m.log.info("file" + ":/source/test.spec.bs:3", "i")
@@ -325,7 +322,9 @@ describe('Roku Log Plugin', () => {
             plugin.rokuLogConfig.removeComments = false;
             await builder.run(options);
 
-            expectFileEquals('test.spec.brs', undent`
+            expect(builder.getDiagnostics().length).to.equal(0);
+
+            expectFileEquals('test.spec.brs', `
                 'test comment here
                 function f1()
                     'test comment here
@@ -391,27 +390,10 @@ describe('Roku Log Plugin', () => {
         it('removes comments', async () => {
             fsExtra.outputFileSync(`${rootDir}/source/test.spec.bs`, `
                 'test comment here
-                function f1()
-                    'test comment here
-                    m.log.info("i")
-                    m.log.warn("w")
-                    m.log.error("e")
-                    m.log.verbose("v")
-                    m.log.method("v")
-                end function
-
-                'test comment here
                 namespace ns
-                    function ns1()
-                        'test comment here
-                        m.log.info("i")
-                        m.log.warn("w")
-                        m.log.error("e")
-                        m.log.verbose("v")
-                        m.log.method("v")
-                    end function
                     'test comment here
                     class c1
+                    private log
                     'test comment here
                     function cm()
                         'test comment here
@@ -424,6 +406,7 @@ describe('Roku Log Plugin', () => {
                     end class
                 end namespace
                 class c2
+                    private log
                     function cm()
                         m.log.info("i")
                         m.log.warn("w")
@@ -438,9 +421,20 @@ describe('Roku Log Plugin', () => {
             plugin.rokuLogConfig.strip = false;
             plugin.rokuLogConfig.insertPkgPath = false;
             plugin.rokuLogConfig.removeComments = true;
+
             await builder.run(options);
-            expectFileEquals('test.spec.brs', undent`
-                function f1()
+
+            expect(builder.getDiagnostics().length).to.equal(0);
+
+            expectFileEquals('test.spec.brs', `
+
+            function __ns_c1_builder()
+                instance = {}
+                instance.new = sub()
+                    m.log = invalid
+                end sub
+
+                instance.cm = function()
 
                     m.log.info("i")
                     m.log.warn("w")
@@ -448,84 +442,44 @@ describe('Roku Log Plugin', () => {
                     m.log.verbose("v")
                     m.log.method("v")
                 end function
-
-                function ns_ns1()
-
+                return instance
+            end function
+            function ns_c1()
+                instance = __ns_c1_builder()
+                instance.new()
+                return instance
+            end function
+            function __c2_builder()
+                instance = {}
+                instance.new = sub()
+                    m.log = invalid
+                end sub
+                instance.cm = function()
                     m.log.info("i")
                     m.log.warn("w")
                     m.log.error("e")
+
+
                     m.log.verbose("v")
                     m.log.method("v")
                 end function
-
-                function __ns_c1_builder()
-                    instance = {}
-                    instance.new = sub()
-                    end sub
-
-                    instance.cm = function()
-
-                        m.log.info("i")
-                        m.log.warn("w")
-                        m.log.error("e")
-                        m.log.verbose("v")
-                        m.log.method("v")
-                    end function
-                    return instance
-                end function
-                function ns_c1()
-                    instance = __ns_c1_builder()
-                    instance.new()
-                    return instance
-                end function
-                function __c2_builder()
-                    instance = {}
-                    instance.new = sub()
-                    end sub
-                    instance.cm = function()
-                        m.log.info("i")
-                        m.log.warn("w")
-                        m.log.error("e")
-
-
-                        m.log.verbose("v")
-                        m.log.method("v")
-                    end function
-                    return instance
-                end function
-                function c2()
-                    instance = __c2_builder()
-                    instance.new()
-                    return instance
-                end function
-            `);
+                return instance
+            end function
+            function c2()
+                instance = __c2_builder()
+                instance.new()
+                return instance
+            end function`);
         });
 
         it('removes comments and strips', async () => {
             fsExtra.outputFileSync(`${rootDir}/source/test.spec.bs`, `
                 'test comment here
-                function f1()
-                    'test comment here
-                    m.log.info("i")
-                    m.log.warn("w")
-                    m.log.error("e")
-                    m.log.verbose("v")
-                    m.log.method("v")
-                end function
-
-                'test comment here
                 namespace ns
-                    function ns1()
-                    'test comment here
-                        m.log.info("i")
-                        m.log.warn("w")
-                        m.log.error("e")
-                        m.log.verbose("v")
-                        m.log.method("v")
-                    end function
-                    'test comment here
+
                     class c1
                         'test comment here
+                        private log = {}
                         function cm()
                             'test comment here
                             m.log.info("i")
@@ -536,25 +490,24 @@ describe('Roku Log Plugin', () => {
                         end function
                     end class
                 end namespace
-                class c2
-                    function cm()
-                        m.log.info("i")
-                        m.log.warn("w")
-                        m.log.error("e")
-                        'test comment here
-                        'test comment here
-                        m.log.verbose("v")
-                        m.log.method("v")
-                    end function
-                end class
+
             `);
+
             plugin.rokuLogConfig.strip = true;
             plugin.rokuLogConfig.insertPkgPath = false;
             plugin.rokuLogConfig.removeComments = true;
             await builder.run(options);
 
-            expectFileEquals('test.spec.brs', undent`
-                function f1()
+            expect(builder.getDiagnostics().length).to.equal(0);
+
+            expectFileEquals('test.spec.brs', `
+            function __ns_c1_builder()
+                instance = {}
+                instance.new = sub()
+                    m.log = {}
+                end sub
+
+                instance.cm = function()
 
 
 
@@ -562,56 +515,13 @@ describe('Roku Log Plugin', () => {
 
 
                 end function
-
-                function ns_ns1()
-
-
-
-
-
-
-                end function
-
-                function __ns_c1_builder()
-                    instance = {}
-                    instance.new = sub()
-                    end sub
-
-                    instance.cm = function()
-
-
-
-
-
-
-                    end function
-                    return instance
-                end function
-                function ns_c1()
-                    instance = __ns_c1_builder()
-                    instance.new()
-                    return instance
-                end function
-                function __c2_builder()
-                    instance = {}
-                    instance.new = sub()
-                    end sub
-                    instance.cm = function()
-
-
-
-
-
-
-
-                    end function
-                    return instance
-                end function
-                function c2()
-                    instance = __c2_builder()
-                    instance.new()
-                    return instance
-                end function
+                return instance
+            end function
+            function ns_c1()
+                instance = __ns_c1_builder()
+                instance.new()
+                return instance
+            end function
             `);
         });
 
@@ -648,6 +558,8 @@ describe('Roku Log Plugin', () => {
             plugin.rokuLogConfig.insertPkgPath = false;
             plugin.rokuLogConfig.removeComments = true;
             await builder.run(options);
+
+            expect(builder.getDiagnostics().length).to.equal(0);
             expect(
                 getContents('test.spec.brs')
             ).to.equal(undent`
@@ -750,6 +662,8 @@ describe('Roku Log Plugin', () => {
             plugin.rokuLogConfig.insertPkgPath = false;
             plugin.rokuLogConfig.removeComments = true;
             await builder.run(options);
+
+            expect(builder.getDiagnostics().length).to.equal(0);
             expect(
                 getContents('test.spec.brs')
             ).to.equal(undent`
@@ -896,11 +810,8 @@ describe('Roku Log Plugin', () => {
 });
 
 function expectFileEquals(filename: string, expected: string) {
-    expect(
-        undent(
-            fsExtra.readFileSync(s`${stagingDir}/source/${filename}`).toString()
-        )
-    ).to.eql(expected);
+    const src = fsExtra.readFileSync(s`${stagingDir}/source/${filename}`).toString();
+    expect(undent(src)).to.eql(undent(expected));
 }
 
 function getContents(filename: string): string {
